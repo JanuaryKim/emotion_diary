@@ -1,23 +1,56 @@
 package emotion.diary.server.diary.service;
 
 import emotion.diary.server.diary.entity.Diary;
+import emotion.diary.server.diary.entity.DiaryImage;
+import emotion.diary.server.diary.repository.DiaryImageRepository;
 import emotion.diary.server.diary.repository.DiaryRepository;
 import emotion.diary.server.member.entity.Member;
+import emotion.diary.server.util.FileUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Transactional
 @RequiredArgsConstructor
 @Service
 public class DiaryService {
 
-    private final DiaryRepository diaryRepository;
+    @Value("${path.file.home}")
+    private String homePath;
 
-    public void createDiary(Diary diary){
+    @Value("${path.file.image.diary}")
+    private String diaryImagePath;
+
+    private final DiaryRepository diaryRepository;
+    private final DiaryImageRepository diaryImageRepository;
+
+    public void createDiary(Diary diary, MultipartFile[] diaryImages) throws IOException {
         Member m = Member.builder().memberId(1L).build();
         diary.setMember(m);
-        diaryRepository.save(diary);
+
+        Diary savedDiary = diaryRepository.save(diary);
+
+        for(int i = 0; i < diaryImages.length; i++){
+            String url = saveDiaryImage(diaryImages[i], savedDiary.getDiaryId());
+            diaryImageRepository.save(DiaryImage.builder().diary(savedDiary).url(url).build());
+        }
+    }
+
+    private String saveDiaryImage(MultipartFile image, Long diaryId) throws IOException {
+
+        String middlePath = "/" + diaryImagePath + diaryId;
+        String totalPath = homePath + middlePath;
+
+        String fileName = StringUtils.cleanPath(image.getOriginalFilename());
+        FileUtil.saveFile(totalPath, fileName, image);
+
+        String dbSaveUrl = middlePath + "/"+ fileName;
+        return dbSaveUrl;
     }
 
     public void modifyDiary(Diary diary, Long modifyDiaryId) {

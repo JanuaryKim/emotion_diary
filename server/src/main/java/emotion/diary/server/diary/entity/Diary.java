@@ -6,8 +6,10 @@ import emotion.diary.server.member.entity.Member;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CascadeType;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -28,4 +30,6 @@ public class Diary extends BaseTimeEntity {
 
     private String content;
 
+    @OneToMany(mappedBy = "diary",  orphanRemoval = true)
+    private List<DiaryImage> diaryImageList;
 }

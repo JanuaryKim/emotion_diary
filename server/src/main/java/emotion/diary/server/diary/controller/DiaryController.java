@@ -8,6 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @RequiredArgsConstructor
@@ -19,8 +22,12 @@ public class DiaryController {
     private final DiaryMapper diaryMapper;
 
     @PostMapping(value="/api/diarys")
-        public ResponseEntity postDiary(@RequestPart(value = "diary-post-dto") DiaryDTO.Post diaryDTOPost){
-        diaryService.createDiary(diaryMapper.diaryDTOPostToDiary(diaryDTOPost));
+        public ResponseEntity postDiary(@RequestPart(value = "diary-post-dto") DiaryDTO.Post diaryDTOPost,
+                                        @RequestPart(value = "diary-images",required = false) MultipartFile[] diaryImages) throws IOException {
+        for(int i = 0; i < 3; i++){
+            System.out.println(diaryImages[i]);
+        }
+        diaryService.createDiary(diaryMapper.diaryDTOPostToDiary(diaryDTOPost), diaryImages);
         return new ResponseEntity(HttpStatus.CREATED);
     }
 
