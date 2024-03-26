@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class DiaryDTO {
 
@@ -47,5 +48,7 @@ public class DiaryDTO {
         private short emotion;
 
         private String content;
+
+        private List<String> urls;
     }
 }

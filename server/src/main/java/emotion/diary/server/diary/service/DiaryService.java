@@ -14,6 +14,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @Transactional
 @RequiredArgsConstructor
@@ -25,6 +27,9 @@ public class DiaryService {
 
     @Value("${path.file.image.diary}")
     private String diaryImagePath;
+
+    @Value("${image.upload.max-count}")
+    private Integer imageUploadMaxCnt;
 
     private final DiaryRepository diaryRepository;
     private final DiaryImageRepository diaryImageRepository;
@@ -61,6 +66,44 @@ public class DiaryService {
         findDiary.setRegDate(diary.getRegDate());
     }
 
+    public void modifyDiaryImage(Long diaryId, MultipartFile[] diaryImages, Long[] deleteImageIds) throws IOException {
+        Diary diary = verifyExistsDiary(diaryId);
+
+        //애초에 요청이 잘못들어 온 경우 확인
+        if(
+                imageUploadMaxCnt < (diary.getDiaryImageList().size() - deleteImageIds.length + diaryImages.length) ||
+                0 > (diary.getDiaryImageList().size() - deleteImageIds.length + diaryImages.length)
+        )
+            throw new RuntimeException();
+
+        //기존 이미지 삭제
+        removeDiaryImageFile(removeDiaryImageData(deleteImageIds));
+
+        //추가 이미지 등록
+        for(int i = 0; i < diaryImages.length; i++){
+            String url = saveDiaryImage(diaryImages[i], diary.getDiaryId());
+            diaryImageRepository.save(DiaryImage.builder().diary(diary).url(url).build());
+        }
+    }
+
+    private List<String> removeDiaryImageData(Long[] deleteImageIds){
+        List<String> paths = new ArrayList<>();
+        for(Long id : deleteImageIds){
+            DiaryImage removeDiaryImage = verifyExistsDiaryImage(id);
+            diaryImageRepository.delete(removeDiaryImage);
+            paths.add(removeDiaryImage.getUrl());
+        }
+        return paths;
+    }
+
+    private void removeDiaryImageFile(List<String> filePaths) throws IOException {
+        for(String path : filePaths){
+            String totalPath = homePath + path;
+            FileUtil.deleteFile(totalPath);
+        }
+    }
+
+
     public void removeDiary(Long removeDiaryId){
 
         Diary removeDiary = verifyExistsDiary(removeDiaryId);
@@ -68,12 +111,15 @@ public class DiaryService {
     }
 
     public Diary findDiary(Long getDiaryId){
-
         Diary findDiary = verifyExistsDiary(getDiaryId);
         return findDiary;
     }
 
     private Diary verifyExistsDiary(Long diaryId){
         return diaryRepository.findById(diaryId).orElseThrow(()-> new RuntimeException());
+    }
+
+    private DiaryImage verifyExistsDiaryImage(Long diaryImageId){
+        return diaryImageRepository.findById(diaryImageId).orElseThrow(()-> new RuntimeException());
     }
 }
