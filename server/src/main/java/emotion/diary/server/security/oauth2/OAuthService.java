@@ -33,6 +33,6 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
 
         return new CustomOauth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
                 attributes.getAttributes(),
-                attributes.getNameAttributeKey());
+                attributes.getNameAttributeKey(), attributes);
     }
 }

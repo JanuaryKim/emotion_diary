@@ -29,7 +29,8 @@ public class JwtTokenizer {
 
 
     // access 토큰 생성
-    public String generateAccessToken(Map<String, Object> claims,
+    public String
+    generateAccessToken(Map<String, Object> claims,
                                       String subject,
                                       Date expiration,
                                       String secretKey) {
