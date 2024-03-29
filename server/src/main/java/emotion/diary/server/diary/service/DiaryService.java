@@ -35,8 +35,6 @@ public class DiaryService {
     private final DiaryImageRepository diaryImageRepository;
 
     public void createDiary(Diary diary, MultipartFile[] diaryImages) throws IOException {
-        Member m = Member.builder().memberId(1L).build();
-        diary.setMember(m);
 
         Diary savedDiary = diaryRepository.save(diary);
 

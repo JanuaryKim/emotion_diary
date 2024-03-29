@@ -29,6 +29,7 @@ public class OAuthService implements OAuth2UserService<OAuth2UserRequest, OAuth2
         // OAuth2 로그인 진행 시 키가 되는 필드 값(PK)
         String userNameAttributeName = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
 
+        //인증 서버로부터 넘어 온 유저 정보를 가지고 유저 속성클래스 생성
         OAuthAttributes attributes = OAuthAttributes.of(registrationId, userNameAttributeName, oAuth2User.getAttributes());
 
         return new CustomOauth2User(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
