@@ -5,6 +5,7 @@ import New from "./pages/New";
 import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import Home from "./pages/Home";
+import SaveToken from "./pages/SaveToken";
 
 const reducer = (state, action) => {
   let newState = [];
@@ -93,6 +94,7 @@ function App() {
               <Route path="/new" element={<New />} />
               <Route path="/diary/:id" element={<Diary />} />
               <Route path="/edit/:id" element={<Edit />} />
+              <Route path="/saveToken" element={<SaveToken />} />
             </Routes>
           </div>
         </BrowserRouter>

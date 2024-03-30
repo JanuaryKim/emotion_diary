@@ -2,6 +2,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { DiaryStateContext } from "../App";
 import DiaryEditor from "../components/DiaryEditor";
+import LoginHeader from "../components/LoginHeader";
+
 const Edit = () => {
   const [originData, setOriginData] = useState();
   const navigator = useNavigate();
@@ -31,6 +33,7 @@ const Edit = () => {
 
   return (
     <div>
+      <LoginHeader />
       {originData && <DiaryEditor isEdit={true} originData={originData} />}
     </div>
   );

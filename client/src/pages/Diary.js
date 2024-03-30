@@ -5,6 +5,7 @@ import MyHeader from "../components/MyHeader";
 import { getStrDate } from "../util/date";
 import MyButton from "../components/MyButton";
 import { emotionList } from "../util/emotion";
+import LoginHeader from "../components/LoginHeader";
 
 const Diary = () => {
   const { id } = useParams();
@@ -48,6 +49,7 @@ const Diary = () => {
 
     return (
       <div className="DiaryPage">
+        <LoginHeader />
         <MyHeader
           headText={getStrDate(new Date(data.date)) + ` 기록`}
           leftChild={
