@@ -12,6 +12,8 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 //테스트 주석 추가
 import java.io.IOException;
@@ -63,21 +65,20 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private void redirect(HttpServletRequest request, HttpServletResponse response, String accessToken,String redirectUrl) throws IOException{
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setHeader("access_token", accessToken);
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
     private URI createRedirectURI(String accessToken) {
-//        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
-//        queryParams.add("access_token", accessToken);
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("access_token", accessToken);
 
         return UriComponentsBuilder
                 .newInstance()
                 .scheme("http")
                 .host("localhost")
-                .path("/")
+                .path("/saveToken")
                 .port(3000)
-//                .queryParams(queryParams)
+                .queryParams(queryParams)
                 .build()
                 .toUri();
     }
