@@ -35,7 +35,7 @@ export const DiaryStateContext = React.createContext(null);
 export const DiaryDispatchContext = React.createContext(null);
 
 function App() {
-  const [data, dispatch] = useReducer(reducer, []);
+  const [diaryList, dispatch] = useReducer(reducer, []);
 
   const dataId = useRef(1);
 
@@ -85,7 +85,7 @@ function App() {
   };
 
   return (
-    <DiaryStateContext.Provider value={data}>
+    <DiaryStateContext.Provider value={{ diaryList, dataId }}>
       <DiaryDispatchContext.Provider value={{ onCreate, onEdit, onRemove }}>
         <BrowserRouter>
           <div className="App">

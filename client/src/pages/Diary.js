@@ -9,7 +9,7 @@ import LoginHeader from "../components/LoginHeader";
 
 const Diary = () => {
   const { id } = useParams();
-  const diaryList = useContext(DiaryStateContext);
+  const { diaryList, dataId } = useContext(DiaryStateContext);
   const navigate = useNavigate();
   const [data, setData] = useState();
 
