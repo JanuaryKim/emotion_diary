@@ -1,9 +1,6 @@
 package emotion.diary.server.diary.dto;
 
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 public class DiaryDTO {
@@ -42,6 +39,8 @@ public class DiaryDTO {
     @AllArgsConstructor
     @Builder
     public static class Response{
+
+        private Long diaryId;
 
         private String regDate;
 

@@ -8,13 +8,18 @@ import emotion.diary.server.member.entity.Member;
 import emotion.diary.server.util.FileUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -34,8 +39,9 @@ public class DiaryService {
     private final DiaryRepository diaryRepository;
     private final DiaryImageRepository diaryImageRepository;
 
-    public void createDiary(Diary diary, MultipartFile[] diaryImages) throws IOException {
+    public void createDiary(Diary diary, MultipartFile[] diaryImages, String memberId) throws IOException {
 
+        diary.setMember(Member.builder().memberId(memberId).build());
         Diary savedDiary = diaryRepository.save(diary);
 
         for(int i = 0; i < diaryImages.length; i++){
@@ -120,4 +126,21 @@ public class DiaryService {
     private DiaryImage verifyExistsDiaryImage(Long diaryImageId){
         return diaryImageRepository.findById(diaryImageId).orElseThrow(()-> new RuntimeException());
     }
+
+    public Page<Diary> findAllDiary(Integer page, Integer size, String strDate, String memberId){
+        LocalDate date = LocalDate.parse(strDate+"-01"); //기준 날짜, 클라로부터 년-월 까지 넘어오기 때문에 임의의 1일을 설정,
+        LocalDate firstDate = date.withDayOfMonth(1); //해당 달의 첫째날
+        LocalDate lastDate = date.withDayOfMonth(date.lengthOfMonth()); //해당 달의 마지막날
+
+        LocalDateTime fromDate = LocalDateTime.of(firstDate,LocalTime.of(0,0,0)); //LocalDate -> LocalDateTime
+        LocalDateTime toDate = LocalDateTime.of(lastDate,LocalTime.of(23,59,59));
+
+        return diaryRepository.findAllByRegDateBetweenAndMember(
+                fromDate,
+                toDate,
+                PageRequest.of(page - 1, size),
+                Member.builder().memberId(memberId).build()
+        );
+    }
+
 }

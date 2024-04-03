@@ -18,10 +18,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 //테스트 주석 추가
 import java.io.IOException;
 import java.net.URI;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RequiredArgsConstructor
 @Component
@@ -48,16 +45,18 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             //신규 멤버 정보 등록
             member = memberService.createMember(memberId, memberEmail, socialKind);
         }
-        String accessToken = delegateAccessToken(member.getEmail()); //액세스 토큰 발행
+        String accessToken = delegateAccessToken(memberId, member.getEmail(), member.getMemberRoles()); //액세스 토큰 발행
         URI redirectURI = createRedirectURI(accessToken); //리다이렉트 URI 생성
         redirect(request,response,accessToken, redirectURI.toString()); //리다이렉트 시킴
     }
 
 
-    private String delegateAccessToken(String memberEmail) {
+    private String delegateAccessToken(String memberId, String memberEmail, List<String> roles) {
 
         Map<String, Object> claims = new HashMap<>();
+        claims.put("memberId", memberId);
         claims.put("memberEmail", memberEmail);
+        claims.put("memberRoles", roles);
         String subject = "accessToken";
         Date accessTokenExpirationDate = jwtTokenizer.getAccessTokenExpiration();
         return jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey());

@@ -5,6 +5,7 @@ import emotion.diary.server.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -14,7 +15,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
     public Member createMember(String memberId, String memberEmail, String socialKind){
-        return memberRepository.save(Member.builder().memberId(memberId).email(memberEmail).reg_kind(socialKind).build());
+        return memberRepository.save(Member.builder().memberId(memberId).email(memberEmail).reg_kind(socialKind).memberRoles(List.of("USER")).build());
     }
 
     public void updateMember(String memberId,String memberEmail){
