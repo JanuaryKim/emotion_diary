@@ -17,8 +17,8 @@ const socialType = [
 const LoginHeader = () => {
   return (
     <div>
-      {socialType.map((socialObj) => {
-        return <LoginButton social={socialObj} />;
+      {socialType.map((socialObj, idx) => {
+        return <LoginButton key={idx} social={socialObj} />;
       })}
     </div>
   );

@@ -30,7 +30,6 @@ const Diary = () => {
         alert("존재하지 않는 일기입니다");
         navigate("/", { replace: true });
       }
-      console.log(targetDiary);
     }
   }, [id, diaryList]);
 
