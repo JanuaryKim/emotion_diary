@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -114,9 +115,15 @@ public class DiaryService {
         diaryRepository.delete(removeDiary);
     }
 
-    public Diary findDiary(Long getDiaryId){
+    public Diary findDiary(Long getDiaryId, String memberId){
         Diary findDiary = verifyExistsDiary(getDiaryId);
+        verifyPermissionCheck(findDiary, memberId);
         return findDiary;
+    }
+
+    private void verifyPermissionCheck(Diary diary, String memberId) {
+
+        if(!diary.getMember().getMemberId().equals(memberId)) throw new RuntimeException();
     }
 
     private Diary verifyExistsDiary(Long diaryId){
@@ -127,7 +134,7 @@ public class DiaryService {
         return diaryImageRepository.findById(diaryImageId).orElseThrow(()-> new RuntimeException());
     }
 
-    public Page<Diary> findAllDiary(Integer page, Integer size, String strDate, String memberId){
+    public Page<Diary> findAllDiary(Integer page, Integer size, String strDate, String memberId, String sort, String emotion){
         LocalDate date = LocalDate.parse(strDate+"-01"); //기준 날짜, 클라로부터 년-월 까지 넘어오기 때문에 임의의 1일을 설정,
         LocalDate firstDate = date.withDayOfMonth(1); //해당 달의 첫째날
         LocalDate lastDate = date.withDayOfMonth(date.lengthOfMonth()); //해당 달의 마지막날
@@ -135,12 +142,44 @@ public class DiaryService {
         LocalDateTime fromDate = LocalDateTime.of(firstDate,LocalTime.of(0,0,0)); //LocalDate -> LocalDateTime
         LocalDateTime toDate = LocalDateTime.of(lastDate,LocalTime.of(23,59,59));
 
-        return diaryRepository.findAllByRegDateBetweenAndMember(
-                fromDate,
-                toDate,
-                PageRequest.of(page - 1, size),
-                Member.builder().memberId(memberId).build()
-        );
+
+
+        Page<Diary> diaryPage = null;
+        if(emotion.equals("good")){
+            diaryPage = diaryRepository.findAllByRegDateBetweenAndMemberAndEmotionLessThanEqual(
+                    fromDate,
+                    toDate,
+                    PageRequest.of(page - 1,
+                            size,
+                            Sort.by(sort.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "regDate").and(Sort.by(Sort.Direction.DESC, "diaryId"))
+                    ),
+                    Member.builder().memberId(memberId).build(),3
+
+                    );
+        }else if(emotion.equals("bad")){
+            diaryPage = diaryRepository.findAllByRegDateBetweenAndMemberAndEmotionGreaterThan(
+                    fromDate,
+                    toDate,
+                    PageRequest.of(page - 1,
+                            size,
+                            Sort.by(sort.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "regDate").and(Sort.by(Sort.Direction.DESC, "diaryId"))
+                    ),
+                    Member.builder().memberId(memberId).build(),3
+
+            );
+        }else{ //all
+            diaryPage = diaryRepository.findAllByRegDateBetweenAndMember(
+                    fromDate,
+                    toDate,
+                    PageRequest.of(page - 1,
+                            size,
+                            Sort.by(sort.equals("latest") ? Sort.Direction.DESC : Sort.Direction.ASC, "regDate").and(Sort.by(Sort.Direction.DESC, "diaryId"))
+                    ),
+                    Member.builder().memberId(memberId).build()
+            );
+        }
+
+        return diaryPage;
     }
 
 }

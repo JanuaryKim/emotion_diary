@@ -34,6 +34,7 @@ public class DiaryController {
                                         ) throws IOException {
 
         String memberId = principal.getName();
+        diaryImages = diaryImages == null ? new MultipartFile[0] : diaryImages; //값이 아예 안 넘어 와 null 경우 대비
         diaryService.createDiary(diaryMapper.diaryDTOPostToDiary(diaryDTOPost), diaryImages, memberId);
         return new ResponseEntity(HttpStatus.CREATED);
     }
@@ -61,8 +62,9 @@ public class DiaryController {
     }
 
     @GetMapping(value = "/api/diarys/{diary-id}")
-    public ResponseEntity getDiary(@PathVariable("diary-id") Long diaryId){
-        Diary findDiary = diaryService.findDiary(diaryId);
+    public ResponseEntity getDiary(@PathVariable("diary-id") Long diaryId,
+                                   Principal principal){
+        Diary findDiary = diaryService.findDiary(diaryId, principal.getName());
         List<String> urls = findDiary.getDiaryImageList().stream().map(DiaryImage::getUrl).collect(Collectors.toList());
         return new ResponseEntity(diaryMapper.diaryToDiaryDTOResponse(findDiary,urls), HttpStatus.OK);
     }
@@ -72,8 +74,11 @@ public class DiaryController {
             @RequestParam(name="page", defaultValue = "1") @Positive Integer page,
             @RequestParam(name = "size", defaultValue = "10") @Positive Integer size,
             @RequestParam(name = "date") String date,
+            @RequestParam(name = "sort", defaultValue = "latest") String sort,
+            @RequestParam(name = "emotion", defaultValue = "all") String emotion,
+
             Principal principal){
-        Page<Diary> diaryPageData = diaryService.findAllDiary(page, size, date, principal.getName());
+        Page<Diary> diaryPageData = diaryService.findAllDiary(page, size, date, principal.getName(), sort, emotion);
         return new ResponseEntity(
                 diaryMapper.diaryDTOResponseListToDiaryPageDTO(
                         diaryPageData.getTotalElements(),

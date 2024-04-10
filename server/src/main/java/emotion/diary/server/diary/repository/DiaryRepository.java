@@ -13,4 +13,7 @@ import java.util.Date;
 @Repository
 public interface DiaryRepository extends JpaRepository<Diary, Long> {
     Page<Diary> findAllByRegDateBetweenAndMember(LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable, Member member);
+    Page<Diary> findAllByRegDateBetweenAndMemberAndEmotionLessThanEqual(LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable, Member member, Integer emotion); //good 감정 일기만
+    Page<Diary> findAllByRegDateBetweenAndMemberAndEmotionGreaterThan(LocalDateTime fromDate, LocalDateTime toDate, Pageable pageable, Member member, Integer emotion); //bad 감정 일기만
+
 }
