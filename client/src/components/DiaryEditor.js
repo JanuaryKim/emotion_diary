@@ -3,30 +3,32 @@ import { useNavigate } from "react-router-dom";
 import MyHeader from "./MyHeader";
 import MyButton from "./MyButton";
 import EmotionItem from "./EmotionItem";
-import { DiaryDispatchContext } from "../App";
 import { getStrDate } from "../util/date";
 import { emotionList } from "../util/emotion";
+import { deleteDiary } from "../apis/deleteDiary";
+import { putDiary } from "../apis/putDiary";
+import { postDiary } from "../apis/postDiary";
 
-const DiaryEditor = ({ isEdit, originData }) => {
+const DiaryEditor = ({ isEdit, originData, id }) => {
   const contentRef = useRef();
   const [content, setContent] = useState("");
   const [emotion, setEmotion] = useState(3);
   const navigator = useNavigate();
   const [date, setDate] = useState(getStrDate(new Date()));
-  const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
 
   const handleClickEmotion = useCallback((emotionId) => {
     setEmotion(emotionId);
   }, []);
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     if (window.confirm(`정말 삭제할까요?`)) {
-      onRemove(originData.id);
+      //!삭제
+      const res = await deleteDiary(id);
       navigator(`/`, { replace: true });
     }
   };
 
-  const handleClickSubmit = () => {
+  const handleClickSubmit = async () => {
     if (content.length < 1) {
       contentRef.current.focus();
       return;
@@ -38,9 +40,37 @@ const DiaryEditor = ({ isEdit, originData }) => {
       )
     ) {
       if (isEdit) {
-        onEdit(originData.id, date, content, emotion);
+        //!수정
+        const formData = new FormData();
+
+        const diaryData = {
+          regDate: date + ` 00:00`,
+          emotion: emotion,
+          content: content,
+        };
+        const diaryDto = JSON.stringify(diaryData);
+        formData.append(
+          "diary-put-dto",
+          new Blob([diaryDto], { type: "application/json" })
+        );
+
+        const res = await putDiary(id, "multipart/form-data", formData);
       } else {
-        onCreate(date, content, emotion);
+        //!생성
+        const formData = new FormData();
+
+        const diaryData = {
+          regDate: date + ` 00:00`,
+          emotion: emotion,
+          content: content,
+        };
+        const diaryDto = JSON.stringify(diaryData);
+        formData.append(
+          "diary-post-dto",
+          new Blob([diaryDto], { type: "application/json" })
+        );
+
+        const res = await postDiary("multipart/form-data", formData);
       }
     }
     navigator("/", { replace: true }); //홈으로 보내는데, 홈으로 갔을 때, 뒤로가기로 일기작성 페이지로 돌아오지 못하게 두번째 인자로 옵션을 줌

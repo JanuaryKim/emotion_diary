@@ -8,3 +8,12 @@ export const getMappingDiaryList = (list) => {
     };
   });
 };
+
+export const getMappingDiaryDetail = (it) => {
+  return {
+    id: it.diaryId,
+    date: new Date(it.regDate).getTime(),
+    content: it.content,
+    emotion: it.emotion,
+  };
+};

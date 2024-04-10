@@ -5,7 +5,6 @@ const PageButton = ({ type, pageNum, onClick }) => {
     <button
       className={["PageButton", `PageButton${btnType}`].join(" ")}
       onClick={() => {
-        console.log("진짜 눌림 넘버" + pageNum);
         onClick(pageNum);
       }}
     >

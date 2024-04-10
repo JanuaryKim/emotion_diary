@@ -1,3 +1,10 @@
-export const getStrDate = (Date) => {
-  return Date.toISOString().slice(0, 10);
+export const getStrDate = (date) => {
+  const formattedDateString =
+    date.getFullYear() +
+    "-" +
+    (date.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    date.getDate().toString().padStart(2, "0");
+
+  return formattedDateString;
 };

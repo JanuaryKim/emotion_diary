@@ -24,15 +24,12 @@ const Home = () => {
   const [filter, setFilter] = useState("all");
 
   const getPage = async (page) => {
-    console.log(`getPage 호출 ${page}`);
     const formattedDate = `${curDate.getFullYear()}-${String(
       curDate.getMonth() + 1
     ).padStart(2, "0")}`;
     const pageSize = process.env.REACT_APP_PAGE_SIZE;
     const url = `page=${page}&size=${pageSize}&date=${formattedDate}&sort=${sortType}&emotion=${filter}`;
-    console.log(`호출 url : ${url}`);
     const diaryPageData = await getDiaryPageData(url);
-    console.log(diaryPageData);
     const totalPageCount = getTotalPageCnt(
       diaryPageData.diaryTotalCount,
       pageSize

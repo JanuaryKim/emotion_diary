@@ -6,12 +6,19 @@ import { getStrDate } from "../util/date";
 import MyButton from "../components/MyButton";
 import { emotionList } from "../util/emotion";
 import LoginHeader from "../components/LoginHeader";
+import { getDiaryDetail } from "../apis/getDiaryDetail";
+import { getMappingDiaryDetail } from "../util/mapping";
 
 const Diary = () => {
   const { id } = useParams();
-  const { diaryList, dataId } = useContext(DiaryStateContext);
   const navigate = useNavigate();
   const [data, setData] = useState();
+
+  const getDiary = async (id) => {
+    const diaryDetailData = await getDiaryDetail(id);
+    const mappingData = getMappingDiaryDetail(diaryDetailData);
+    setData(mappingData);
+  };
 
   useEffect(() => {
     const titleElements = document.getElementsByTagName("title")[0];
@@ -19,19 +26,11 @@ const Diary = () => {
   }, []);
 
   useEffect(() => {
-    if (diaryList.length >= 1) {
-      const targetDiary = diaryList.find(
-        (it) => parseInt(it.id) === parseInt(id)
-      );
-
-      if (targetDiary) {
-        setData(targetDiary);
-      } else {
-        alert("존재하지 않는 일기입니다");
-        navigate("/", { replace: true });
-      }
+    if (localStorage.getItem("access_token")) {
+      getDiary(id);
+    } else {
     }
-  }, [id, diaryList]);
+  }, [id]);
 
   if (!data) {
     return (
@@ -43,8 +42,6 @@ const Diary = () => {
     const curEmotionData = emotionList.find(
       (emotion) => parseInt(emotion.emotion_id) === parseInt(data.emotion)
     );
-
-    console.log(curEmotionData);
 
     return (
       <div className="DiaryPage">

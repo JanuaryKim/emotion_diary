@@ -3,12 +3,19 @@ import { useContext, useEffect, useState } from "react";
 import { DiaryStateContext } from "../App";
 import DiaryEditor from "../components/DiaryEditor";
 import LoginHeader from "../components/LoginHeader";
+import { getDiaryDetail } from "../apis/getDiaryDetail";
+import { getMappingDiaryDetail } from "../util/mapping";
 
 const Edit = () => {
   const [originData, setOriginData] = useState();
-  const navigator = useNavigate();
   const { id } = useParams();
-  const { diaryList } = useContext(DiaryStateContext);
+
+  const getDiary = async (id) => {
+    const diaryDetailData = await getDiaryDetail(id);
+    const mappedData = getMappingDiaryDetail(diaryDetailData);
+
+    setOriginData(mappedData);
+  };
 
   useEffect(() => {
     const titleElements = document.getElementsByTagName("title")[0];
@@ -16,25 +23,18 @@ const Edit = () => {
   }, []);
 
   useEffect(() => {
-    if (diaryList.length >= 1) {
-      const targetDiary = diaryList.find(
-        (it) => parseInt(it.id) === parseInt(id)
-      );
-      console.log(targetDiary);
-
-      if (targetDiary) {
-        setOriginData(targetDiary);
-      } else {
-        alert("존재하지 않는 일기입니다");
-        navigator("/", { replace: true });
-      }
+    if (localStorage.getItem("access_token")) {
+      getDiary(id);
+    } else {
     }
-  }, [id, diaryList]);
+  }, [id]);
 
   return (
     <div>
       <LoginHeader />
-      {originData && <DiaryEditor isEdit={true} originData={originData} />}
+      {originData && (
+        <DiaryEditor isEdit={true} originData={originData} id={id} />
+      )}
     </div>
   );
 };
