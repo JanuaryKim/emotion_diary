@@ -8,6 +8,8 @@ import { emotionList } from "../util/emotion";
 import { deleteDiary } from "../apis/deleteDiary";
 import { putDiary } from "../apis/putDiary";
 import { postDiary } from "../apis/postDiary";
+import { useDropzone } from "react-dropzone";
+import "../external.css";
 
 const DiaryEditor = ({ isEdit, originData, id }) => {
   const contentRef = useRef();
@@ -15,6 +17,67 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
   const [emotion, setEmotion] = useState(3);
   const navigator = useNavigate();
   const [date, setDate] = useState(getStrDate(new Date()));
+
+  // 이미지
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "image/*": [],
+    },
+    onDrop: (acceptedFiles) => {
+      acceptedFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+
+        reader.onabort = () => console.log("file reading was aborted");
+        reader.onerror = () => console.log("file reading has failed");
+        reader.onload = () => {
+          // Do whatever you want with the file contents
+          const binaryStr = reader.result;
+          console.log(`${idx} 번째 이미지`);
+          console.log(binaryStr);
+        };
+        reader.readAsArrayBuffer(file);
+      });
+      setFiles(
+        acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        )
+      );
+    },
+    maxFiles: 3,
+    maxSize: 10000000, //10MB
+    // maxSize: 500000,
+    onError: (error) => {
+      console.log("에러");
+      console.log(error);
+    },
+    onDropRejected: (fileRejections) => {
+      fileRejections.forEach((f) => {
+        console.log("거부");
+        console.log(f.errors);
+      });
+    },
+  });
+  const thumbs = files.map((file) => (
+    <div className="thumb" key={file.name}>
+      <div className="thumbInner">
+        <img
+          src={file.preview}
+          className="thumbImg"
+          // Revoke data uri after image is loaded
+          onLoad={() => {
+            URL.revokeObjectURL(file.preview);
+          }}
+        />
+      </div>
+    </div>
+  ));
+  useEffect(() => {
+    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, []);
 
   const handleClickEmotion = useCallback((emotionId) => {
     setEmotion(emotionId);
@@ -69,6 +132,10 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           "diary-post-dto",
           new Blob([diaryDto], { type: "application/json" })
         );
+
+        for (const imageFile of files) {
+          formData.append("diary-images", imageFile);
+        }
 
         const res = await postDiary("multipart/form-data", formData);
       }
@@ -127,6 +194,16 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
             })}
           </div>
         </section>
+
+        {/* 이미지 */}
+        <section>
+          <div {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            <p>파일을 드래그 하여 올리거나 선택하여 주세요 (3개)</p>
+          </div>
+          <aside className="thumbsContainer">{thumbs}</aside>
+        </section>
+
         <section>
           <h2>오늘의 일기</h2>
           <div className="input_box text_wrapper">

@@ -8,6 +8,7 @@ export const postDiary = async (contentType, data) => {
         return config;
       });
     }
+
     const response = await Api.post(`/api/diarys`, data);
     return response.status;
   } catch (err) {
