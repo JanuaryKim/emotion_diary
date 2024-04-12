@@ -68,6 +68,7 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           className="thumbImg"
           // Revoke data uri after image is loaded
           onLoad={() => {
+            console.log(file.preview);
             URL.revokeObjectURL(file.preview);
           }}
         />
@@ -116,6 +117,10 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           "diary-put-dto",
           new Blob([diaryDto], { type: "application/json" })
         );
+
+        for (const imageFile of files) {
+          formData.append("diary-images", imageFile);
+        }
 
         const res = await putDiary(id, "multipart/form-data", formData);
       } else {

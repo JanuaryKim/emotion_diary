@@ -15,5 +15,6 @@ export const getMappingDiaryDetail = (it) => {
     date: new Date(it.regDate).getTime(),
     content: it.content,
     emotion: it.emotion,
+    images: it.urls,
   };
 };

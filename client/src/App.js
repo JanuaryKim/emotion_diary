@@ -6,6 +6,7 @@ import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import Home from "./pages/Home";
 import SaveToken from "./pages/SaveToken";
+import Test from "./pages/Test";
 
 export const DiaryStateContext = React.createContext(null);
 export const DiaryDispatchContext = React.createContext(null);
@@ -22,6 +23,7 @@ function App() {
               <Route path="/diary/:id" element={<Diary />} />
               <Route path="/edit/:id" element={<Edit />} />
               <Route path="/saveToken" element={<SaveToken />} />
+              <Route path="/Test" element={<Test />} />
             </Routes>
           </div>
         </BrowserRouter>
