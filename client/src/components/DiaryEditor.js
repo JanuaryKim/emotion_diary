@@ -33,20 +33,29 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
         reader.onload = () => {
           // Do whatever you want with the file contents
           const binaryStr = reader.result;
-          console.log(`${idx} 번째 이미지`);
-          console.log(binaryStr);
         };
         reader.readAsArrayBuffer(file);
       });
-      setFiles(
-        acceptedFiles.map((file) =>
-          Object.assign(file, {
-            preview: URL.createObjectURL(file),
-          })
-        )
+
+      const droppedFiles = acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
       );
+
+      if (
+        files.length + droppedFiles.length >
+        process.env.REACT_APP_UPLOAD_IMAGE_CNT
+      ) {
+        alert("최대 업로드 이미지 수를 초과하였습니다.");
+        return;
+      }
+
+      const newFiles = [...files, ...droppedFiles];
+
+      setFiles(newFiles);
     },
-    maxFiles: 3,
+    maxFiles: process.env.REACT_APP_UPLOAD_IMAGE_CNT,
     maxSize: 10000000, //10MB
     // maxSize: 500000,
     onError: (error) => {
@@ -60,15 +69,27 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       });
     },
   });
+
+  const handleClickThumbs = (fileName) => {
+    console.log(fileName + " 삭제");
+    const newFiles = files.filter((f) => {
+      return f.name != fileName;
+    });
+    setFiles(newFiles);
+  };
+
   const thumbs = files.map((file) => (
-    <div className="thumb" key={file.name}>
+    <div
+      className="thumb"
+      key={file.name}
+      onClick={() => handleClickThumbs(file.name)}
+    >
       <div className="thumbInner">
         <img
           src={file.preview}
           className="thumbImg"
           // Revoke data uri after image is loaded
           onLoad={() => {
-            console.log(file.preview);
             URL.revokeObjectURL(file.preview);
           }}
         />
@@ -148,11 +169,39 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
     navigator("/", { replace: true }); //홈으로 보내는데, 홈으로 갔을 때, 뒤로가기로 일기작성 페이지로 돌아오지 못하게 두번째 인자로 옵션을 줌
   };
 
+  const getImageData = async (fileName, url) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const blobResponse = await fetch(blobUrl);
+    const fileBlob = await blobResponse.blob();
+    URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
+    const file = new File([fileBlob], fileName);
+    return file;
+  };
+  const initFiles = async () => {
+    let fs = [];
+    for (let i = 0; i < originData.images.length; i++) {
+      const file = await getImageData(
+        originData.images[i].url.split("/").pop(),
+        process.env.REACT_APP_API_BASE_URL + originData.images[i].url
+      );
+
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      fs.push(file);
+    }
+    setFiles(fs);
+  };
+
   useEffect(() => {
     if (isEdit) {
       setDate(getStrDate(new Date(parseInt(originData.date))));
       setEmotion(originData.emotion);
       setContent(originData.content);
+      initFiles();
     }
   }, []);
 

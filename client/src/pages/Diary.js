@@ -16,21 +16,6 @@ const Diary = () => {
   const navigate = useNavigate();
   const [data, setData] = useState();
 
-  const imgs = [
-    {
-      original: "https://picsum.photos/id/1018/1000/600/",
-      thumbnail: "https://picsum.photos/id/1018/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1015/1000/600/",
-      thumbnail: "https://picsum.photos/id/1015/250/150/",
-    },
-    {
-      original: "https://picsum.photos/id/1019/1000/600/",
-      thumbnail: "https://picsum.photos/id/1019/250/150/",
-    },
-  ];
-
   const getDiary = async (id) => {
     const diaryDetailData = await getDiaryDetail(id);
     const mappingData = getMappingDiaryDetail(diaryDetailData);
@@ -96,10 +81,12 @@ const Diary = () => {
             <div className="diary_image_wrapper">
               {data.images.length > 0 ? (
                 <ImageGallery
-                  items={data.images.map((url) => {
+                  items={data.images.map((diaryImageDTO) => {
                     return {
-                      original: process.env.REACT_APP_API_BASE_URL + url,
-                      thumbnail: process.env.REACT_APP_API_BASE_URL + url,
+                      original:
+                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
+                      thumbnail:
+                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
                     };
                   })}
                 />
