@@ -1,6 +1,8 @@
 import MyButton from "./MyButton";
 import { useNavigate } from "react-router-dom";
 import React from "react";
+import { getDiaryDetail } from "../apis/getDiaryDetail";
+
 const DiaryItem = ({ id, content, emotion, date }) => {
   const navigator = useNavigate();
 

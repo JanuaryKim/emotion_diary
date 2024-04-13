@@ -3,30 +3,117 @@ import { useNavigate } from "react-router-dom";
 import MyHeader from "./MyHeader";
 import MyButton from "./MyButton";
 import EmotionItem from "./EmotionItem";
-import { DiaryDispatchContext } from "../App";
 import { getStrDate } from "../util/date";
 import { emotionList } from "../util/emotion";
+import { deleteDiary } from "../apis/deleteDiary";
+import { putDiary } from "../apis/putDiary";
+import { postDiary } from "../apis/postDiary";
+import { useDropzone } from "react-dropzone";
+import "../external.css";
 
-const DiaryEditor = ({ isEdit, originData }) => {
+const DiaryEditor = ({ isEdit, originData, id }) => {
   const contentRef = useRef();
   const [content, setContent] = useState("");
   const [emotion, setEmotion] = useState(3);
   const navigator = useNavigate();
   const [date, setDate] = useState(getStrDate(new Date()));
-  const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
+
+  // 이미지
+  const [files, setFiles] = useState([]);
+  const { getRootProps, getInputProps } = useDropzone({
+    accept: {
+      "image/*": [],
+    },
+    onDrop: (acceptedFiles) => {
+      acceptedFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+
+        reader.onabort = () => console.log("file reading was aborted");
+        reader.onerror = () => console.log("file reading has failed");
+        reader.onload = () => {
+          // Do whatever you want with the file contents
+          const binaryStr = reader.result;
+        };
+        reader.readAsArrayBuffer(file);
+      });
+
+      const droppedFiles = acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      );
+
+      if (
+        files.length + droppedFiles.length >
+        process.env.REACT_APP_UPLOAD_IMAGE_CNT
+      ) {
+        alert("최대 업로드 이미지 수를 초과하였습니다.");
+        return;
+      }
+
+      const newFiles = [...files, ...droppedFiles];
+
+      setFiles(newFiles);
+    },
+    maxFiles: process.env.REACT_APP_UPLOAD_IMAGE_CNT,
+    maxSize: 10000000, //10MB
+    // maxSize: 500000,
+    onError: (error) => {
+      console.log("에러");
+      console.log(error);
+    },
+    onDropRejected: (fileRejections) => {
+      fileRejections.forEach((f) => {
+        console.log("거부");
+        console.log(f.errors);
+      });
+    },
+  });
+
+  const handleClickThumbs = (fileName) => {
+    console.log(fileName + " 삭제");
+    const newFiles = files.filter((f) => {
+      return f.name != fileName;
+    });
+    setFiles(newFiles);
+  };
+
+  const thumbs = files.map((file) => (
+    <div
+      className="thumb"
+      key={file.name}
+      onClick={() => handleClickThumbs(file.name)}
+    >
+      <div className="thumbInner">
+        <img
+          src={file.preview}
+          className="thumbImg"
+          // Revoke data uri after image is loaded
+          onLoad={() => {
+            URL.revokeObjectURL(file.preview);
+          }}
+        />
+      </div>
+    </div>
+  ));
+  useEffect(() => {
+    // Make sure to revoke the data uris to avoid memory leaks, will run on unmount
+    return () => files.forEach((file) => URL.revokeObjectURL(file.preview));
+  }, []);
 
   const handleClickEmotion = useCallback((emotionId) => {
     setEmotion(emotionId);
   }, []);
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
     if (window.confirm(`정말 삭제할까요?`)) {
-      onRemove(originData.id);
+      //!삭제
+      const res = await deleteDiary(id);
       navigator(`/`, { replace: true });
     }
   };
 
-  const handleClickSubmit = () => {
+  const handleClickSubmit = async () => {
     if (content.length < 1) {
       contentRef.current.focus();
       return;
@@ -38,12 +125,75 @@ const DiaryEditor = ({ isEdit, originData }) => {
       )
     ) {
       if (isEdit) {
-        onEdit(originData.id, date, content, emotion);
+        //!수정
+        const formData = new FormData();
+
+        const diaryData = {
+          regDate: date + ` 00:00`,
+          emotion: emotion,
+          content: content,
+        };
+        const diaryDto = JSON.stringify(diaryData);
+        formData.append(
+          "diary-put-dto",
+          new Blob([diaryDto], { type: "application/json" })
+        );
+
+        for (const imageFile of files) {
+          formData.append("diary-images", imageFile);
+        }
+
+        const res = await putDiary(id, "multipart/form-data", formData);
       } else {
-        onCreate(date, content, emotion);
+        //!생성
+        const formData = new FormData();
+
+        const diaryData = {
+          regDate: date + ` 00:00`,
+          emotion: emotion,
+          content: content,
+        };
+        const diaryDto = JSON.stringify(diaryData);
+        formData.append(
+          "diary-post-dto",
+          new Blob([diaryDto], { type: "application/json" })
+        );
+
+        for (const imageFile of files) {
+          formData.append("diary-images", imageFile);
+        }
+
+        const res = await postDiary("multipart/form-data", formData);
       }
     }
     navigator("/", { replace: true }); //홈으로 보내는데, 홈으로 갔을 때, 뒤로가기로 일기작성 페이지로 돌아오지 못하게 두번째 인자로 옵션을 줌
+  };
+
+  const getImageData = async (fileName, url) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+
+    const blobResponse = await fetch(blobUrl);
+    const fileBlob = await blobResponse.blob();
+    URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
+    const file = new File([fileBlob], fileName);
+    return file;
+  };
+  const initFiles = async () => {
+    let fs = [];
+    for (let i = 0; i < originData.images.length; i++) {
+      const file = await getImageData(
+        originData.images[i].url.split("/").pop(),
+        process.env.REACT_APP_API_BASE_URL + originData.images[i].url
+      );
+
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+      fs.push(file);
+    }
+    setFiles(fs);
   };
 
   useEffect(() => {
@@ -51,6 +201,7 @@ const DiaryEditor = ({ isEdit, originData }) => {
       setDate(getStrDate(new Date(parseInt(originData.date))));
       setEmotion(originData.emotion);
       setContent(originData.content);
+      initFiles();
     }
   }, []);
 
@@ -97,6 +248,16 @@ const DiaryEditor = ({ isEdit, originData }) => {
             })}
           </div>
         </section>
+
+        {/* 이미지 */}
+        <section>
+          <div {...getRootProps({ className: "dropzone" })}>
+            <input {...getInputProps()} />
+            <p>파일을 드래그 하여 올리거나 선택하여 주세요 (3개)</p>
+          </div>
+          <aside className="thumbsContainer">{thumbs}</aside>
+        </section>
+
         <section>
           <h2>오늘의 일기</h2>
           <div className="input_box text_wrapper">
