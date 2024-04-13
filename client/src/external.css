@@ -1,0 +1,36 @@
+section .thumbsContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+section .thumbsContainer .thumb {
+  display: inline-flex;
+  border-radius: 2px;
+  border: 1px solid #eaeaea;
+  margin-bottom: 8px;
+  margin-right: 8px;
+  width: 100px;
+  height: 100px;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+section .thumbsContainer .thumb .thumbInner {
+  display: flex;
+  min-width: 0px;
+  overflow: hidden;
+}
+
+section .thumbsContainer .thumb .thumbInner .thumbImg {
+  display: block;
+  width: auto;
+  height: 100%;
+}
+
+section .dropzone {
+  background-color: #ececec;
+  border-radius: 5px;
+  padding: 20px;
+}

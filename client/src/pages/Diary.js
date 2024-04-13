@@ -5,12 +5,23 @@ import MyHeader from "../components/MyHeader";
 import { getStrDate } from "../util/date";
 import MyButton from "../components/MyButton";
 import { emotionList } from "../util/emotion";
+import LoginHeader from "../components/LoginHeader";
+import { getDiaryDetail } from "../apis/getDiaryDetail";
+import { getMappingDiaryDetail } from "../util/mapping";
+import ImageGallery from "react-image-gallery";
+import "react-image-gallery/styles/css/image-gallery.css";
 
 const Diary = () => {
   const { id } = useParams();
-  const diaryList = useContext(DiaryStateContext);
   const navigate = useNavigate();
   const [data, setData] = useState();
+
+  const getDiary = async (id) => {
+    const diaryDetailData = await getDiaryDetail(id);
+    const mappingData = getMappingDiaryDetail(diaryDetailData);
+    console.log(mappingData.images);
+    setData(mappingData);
+  };
 
   useEffect(() => {
     const titleElements = document.getElementsByTagName("title")[0];
@@ -18,20 +29,11 @@ const Diary = () => {
   }, []);
 
   useEffect(() => {
-    if (diaryList.length >= 1) {
-      const targetDiary = diaryList.find(
-        (it) => parseInt(it.id) === parseInt(id)
-      );
-
-      if (targetDiary) {
-        setData(targetDiary);
-      } else {
-        alert("존재하지 않는 일기입니다");
-        navigate("/", { replace: true });
-      }
-      console.log(targetDiary);
+    if (localStorage.getItem("access_token")) {
+      getDiary(id);
+    } else {
     }
-  }, [id, diaryList]);
+  }, [id]);
 
   if (!data) {
     return (
@@ -44,10 +46,9 @@ const Diary = () => {
       (emotion) => parseInt(emotion.emotion_id) === parseInt(data.emotion)
     );
 
-    console.log(curEmotionData);
-
     return (
       <div className="DiaryPage">
+        <LoginHeader />
         <MyHeader
           headText={getStrDate(new Date(data.date)) + ` 기록`}
           leftChild={
@@ -75,6 +76,26 @@ const Diary = () => {
               </div>
             </div>
           </section>
+          <section>
+            <h4>오늘의 순간</h4>
+            <div className="diary_image_wrapper">
+              {data.images.length > 0 ? (
+                <ImageGallery
+                  items={data.images.map((diaryImageDTO) => {
+                    return {
+                      original:
+                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
+                      thumbnail:
+                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
+                    };
+                  })}
+                />
+              ) : (
+                "이미지가 존재하지 않습니다"
+              )}
+            </div>
+          </section>
+
           <section>
             <h4>오늘의 일기</h4>
             <div className="diary_content_wrapper">
