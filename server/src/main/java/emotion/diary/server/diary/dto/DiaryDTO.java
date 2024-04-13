@@ -48,6 +48,6 @@ public class DiaryDTO {
 
         private String content;
 
-        private List<String> urls;
+        private List<DiaryImageDTO.Response> images;
     }
 }

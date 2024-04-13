@@ -18,9 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Transactional
@@ -46,6 +44,7 @@ public class DiaryService {
         Diary savedDiary = diaryRepository.save(diary);
 
         for(int i = 0; i < diaryImages.length; i++){
+
             String url = saveDiaryImage(diaryImages[i], savedDiary.getDiaryId());
             diaryImageRepository.save(DiaryImage.builder().diary(savedDiary).url(url).build());
         }
@@ -56,10 +55,10 @@ public class DiaryService {
         String middlePath = "/" + diaryImagePath + diaryId;
         String totalPath = homePath + middlePath;
 
-        String fileName = StringUtils.cleanPath(image.getOriginalFilename());
-        FileUtil.saveFile(totalPath, fileName, image);
+        String originalFileName = StringUtils.cleanPath(image.getOriginalFilename());
+        String newFileName = FileUtil.saveFile(totalPath, originalFileName, image);
 
-        String dbSaveUrl = middlePath + "/"+ fileName;
+        String dbSaveUrl = middlePath + "/"+ newFileName;
         return dbSaveUrl;
     }
 
@@ -71,33 +70,51 @@ public class DiaryService {
         findDiary.setRegDate(diary.getRegDate());
     }
 
-    public void modifyDiaryImage(Long diaryId, MultipartFile[] diaryImages, Long[] deleteImageIds) throws IOException {
+    public void modifyDiaryImage(Long diaryId, MultipartFile[] diaryImages) throws IOException {
         Diary diary = verifyExistsDiary(diaryId);
 
-        //애초에 요청이 잘못들어 온 경우 확인
-        if(
-                imageUploadMaxCnt < (diary.getDiaryImageList().size() - deleteImageIds.length + diaryImages.length) ||
-                0 > (diary.getDiaryImageList().size() - deleteImageIds.length + diaryImages.length)
-        )
-            throw new RuntimeException();
-
         //기존 이미지 삭제
-        removeDiaryImageFile(removeDiaryImageData(deleteImageIds));
+        removeDiaryImageFile(removeDiaryImageData(diary,diaryImages));
+
 
         //추가 이미지 등록
         for(int i = 0; i < diaryImages.length; i++){
+            if(verifyExistsImage(diary, diaryImages[i])) continue; //기존 이미지가 그대로 들어왔다면, 수정시 삭제하지 않고 유지한 이미지 이므로 또 추가할 필요 X
             String url = saveDiaryImage(diaryImages[i], diary.getDiaryId());
             diaryImageRepository.save(DiaryImage.builder().diary(diary).url(url).build());
         }
     }
 
-    private List<String> removeDiaryImageData(Long[] deleteImageIds){
+    private boolean verifyExistsImage(Diary diary,MultipartFile multipartFile){
+        boolean check = diary.getDiaryImageList().stream().anyMatch((img)-> {
+            String existsFileName = img.getUrl().substring(img.getUrl().lastIndexOf("/") + 1);
+            String requestFileName = multipartFile.getOriginalFilename();
+            return existsFileName.equals(requestFileName);
+        });
+        return check;
+    }
+
+    private List<String> removeDiaryImageData(Diary modifyDiary, MultipartFile[] requestDiaryImages){
+
         List<String> paths = new ArrayList<>();
-        for(Long id : deleteImageIds){
-            DiaryImage removeDiaryImage = verifyExistsDiaryImage(id);
-            diaryImageRepository.delete(removeDiaryImage);
-            paths.add(removeDiaryImage.getUrl());
+        for (DiaryImage existsDiaryImage : modifyDiary.getDiaryImageList()) {
+            boolean isDelete = true;
+            int lastIdx = existsDiaryImage.getUrl().lastIndexOf('/');
+            String fileName = existsDiaryImage.getUrl().substring(lastIdx+1); //파일이름 얻음
+            for(MultipartFile multipartFile : requestDiaryImages){
+                if(multipartFile.getOriginalFilename().equals(fileName)){
+                    isDelete = false;
+                    break;
+                }
+            }
+            if(isDelete){
+                Long deleteId = existsDiaryImage.getDiaryImageId();
+                DiaryImage removeDiaryImage = verifyExistsDiaryImage(deleteId);
+                diaryImageRepository.delete(removeDiaryImage);
+                paths.add(removeDiaryImage.getUrl());
+            }
         }
+
         return paths;
     }
 

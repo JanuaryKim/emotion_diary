@@ -19,8 +19,8 @@ public interface DiaryMapper {
     public Diary diaryDTOPutToDiary(DiaryDTO.Put putDTO);
 
     @Mapping(target = "regDate", source = "dto.regDate", dateFormat = "yyyy-MM-dd HH:mm") //String 인 날짜 데이터 -> LocalDateTime
-    @Mapping(target = "urls", source = "imageUrls")
-    public DiaryDTO.Response diaryToDiaryDTOResponse(Diary dto, List<String> imageUrls);
+    @Mapping(target = "images", source = "dto.diaryImageList")
+    public DiaryDTO.Response diaryToDiaryDTOResponse(Diary dto);
 
     public List<DiaryDTO.Response> diaryPageToDiaryDTOResponseList(List<Diary> diaryList);
 

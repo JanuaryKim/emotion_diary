@@ -2,6 +2,7 @@ package emotion.diary.server.diary.controller;
 
 
 import emotion.diary.server.diary.dto.DiaryDTO;
+import emotion.diary.server.diary.dto.DiaryPageDTO;
 import emotion.diary.server.diary.entity.Diary;
 import emotion.diary.server.diary.entity.DiaryImage;
 import emotion.diary.server.diary.mapper.DiaryMapper;
@@ -44,14 +45,13 @@ public class DiaryController {
     @PutMapping(value="/api/diarys/{diary-id}")
     public ResponseEntity putDiary(@RequestPart(value = "diary-put-dto") DiaryDTO.Put diaryDTOPut,
                                    @RequestPart(value = "diary-images", required = false) MultipartFile[] diaryImages,
-                                   @RequestParam(value = "delete-image-ids", required = false, defaultValue = "") Long[] deleteImageIds,
                                    @PathVariable("diary-id") Long diaryId) throws IOException {
 
         //! 수정 요청 유저와 일기 작석자가 동일한지 검증 필요
         diaryImages = diaryImages == null ? new MultipartFile[0] : diaryImages; //값이 아예 안 넘어 와 null 경우 대비
         Diary modifyDiary = diaryMapper.diaryDTOPutToDiary(diaryDTOPut);
         diaryService.modifyDiary(modifyDiary, diaryId); //기본 데이터 수정
-        diaryService.modifyDiaryImage(diaryId, diaryImages, deleteImageIds); //이미지 관련 수정
+        diaryService.modifyDiaryImage(diaryId, diaryImages); //이미지 관련 수정
         return new ResponseEntity(HttpStatus.OK);
     }
 
@@ -66,7 +66,7 @@ public class DiaryController {
                                    Principal principal){
         Diary findDiary = diaryService.findDiary(diaryId, principal.getName());
         List<String> urls = findDiary.getDiaryImageList().stream().map(DiaryImage::getUrl).collect(Collectors.toList());
-        return new ResponseEntity(diaryMapper.diaryToDiaryDTOResponse(findDiary,urls), HttpStatus.OK);
+        return new ResponseEntity(diaryMapper.diaryToDiaryDTOResponse(findDiary), HttpStatus.OK);
     }
 
     @GetMapping(value = "/api/diarys")
@@ -79,11 +79,11 @@ public class DiaryController {
 
             Principal principal){
         Page<Diary> diaryPageData = diaryService.findAllDiary(page, size, date, principal.getName(), sort, emotion);
-        return new ResponseEntity(
-                diaryMapper.diaryDTOResponseListToDiaryPageDTO(
-                        diaryPageData.getTotalElements(),
-                        diaryMapper.diaryPageToDiaryDTOResponseList(diaryPageData.getContent())
-                )
+        DiaryPageDTO response = diaryMapper.diaryDTOResponseListToDiaryPageDTO(
+                diaryPageData.getTotalElements(),
+                diaryMapper.diaryPageToDiaryDTOResponseList(diaryPageData.getContent())
+        );
+        return new ResponseEntity(response
                 ,HttpStatus.OK);
     }
 
