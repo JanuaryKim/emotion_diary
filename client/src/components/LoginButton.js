@@ -1,7 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
 const LoginButton = ({ social }) => {
-  const navigator = useNavigate();
   const login = (socialEngName) => {
     const baseURL = process.env.REACT_APP_API_BASE_URL;
     window.location.assign(`${baseURL}/oauth2/authorization/${socialEngName}`);
