@@ -1,8 +1,19 @@
-export const getMappingDiaryList = (list) => {
+export const getMappingDiaryListFromServer = (list) => {
   return list.map((it) => {
     return {
       id: it.diaryId,
       date: new Date(it.regDate).getTime(),
+      content: it.content,
+      emotion: it.emotion,
+    };
+  });
+};
+
+export const getMappingDiaryListFromLocal = (list) => {
+  return list.map((it) => {
+    return {
+      id: it.diaryId,
+      date: new Date(it.date).getTime(),
       content: it.content,
       emotion: it.emotion,
     };

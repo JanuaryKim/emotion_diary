@@ -7,7 +7,10 @@ import DiaryList from "../components/DiaryList";
 import LoginHeader from "../components/LoginHeader";
 import PageNumber from "../components/PageNumber";
 import { getTotalPageCnt } from "../util/page";
-import { getMappingDiaryList } from "../util/mapping";
+import {
+  getMappingDiaryListFromServer,
+  getMappingDiaryListFromLocal,
+} from "../util/mapping";
 
 const Home = () => {
   useEffect(() => {
@@ -22,6 +25,7 @@ const Home = () => {
   const [totalPage, setTotalPage] = useState(1);
   const [sortType, setSortType] = useState("latest");
   const [filter, setFilter] = useState("all");
+  const { login, localData } = useContext(DiaryStateContext);
 
   const getPage = async (page) => {
     const formattedDate = `${curDate.getFullYear()}-${String(
@@ -30,23 +34,87 @@ const Home = () => {
     const pageSize = process.env.REACT_APP_PAGE_SIZE;
     const url = `page=${page}&size=${pageSize}&date=${formattedDate}&sort=${sortType}&emotion=${filter}`;
     const diaryPageData = await getDiaryPageData(url);
+    console.log(diaryPageData);
     const totalPageCount = getTotalPageCnt(
       diaryPageData.diaryTotalCount,
       pageSize
     );
     //서버에서 받은 데이터 가공
-    const diaryList = getMappingDiaryList(diaryPageData.diaryList);
+    const diaryList = getMappingDiaryListFromServer(diaryPageData.diaryList);
     setTotalPage(totalPageCount);
     setData(diaryList);
-    setCurPage(page);
+    // setCurPage(page);
+  };
+
+  const datefiltering = (diaryList) => {
+    const firstDay = new Date(curDate.getFullYear(), curDate.getMonth(), 1, 0); //이번달의 첫날 0시(시의 기본값이 15이므로 -15)
+    const lastDay = new Date(
+      curDate.getFullYear(),
+      curDate.getMonth() + 1,
+      0,
+      23,
+      59,
+      59
+    );
+    return diaryList.filter(
+      (it) => firstDay.getTime() <= it.date && it.date <= lastDay.getTime()
+    );
+  };
+
+  const emotionFiltering = (diaryList) => {
+    const emotionFilter = (it) => {
+      if (filter === "good") {
+        return it.emotion <= 3;
+      } else {
+        return it.emotion > 3;
+      }
+    };
+    return filter === "all" ? diaryList : diaryList.filter(emotionFilter);
+  };
+
+  const sorting = (diaryList) => {
+    const compare = (d1, d2) => {
+      if (sortType === "latest") {
+        return parseInt(d2.date) - parseInt(d1.date); //문자열로 들어올지도 몰라서 parseInt
+      } else {
+        return parseInt(d1.date) - parseInt(d2.date);
+      }
+    };
+    return diaryList.sort(compare);
+  };
+
+  const getPageFromLocal = async (page) => {
+    const dateFilteredData = datefiltering(localData);
+    const emotionFilteredData = emotionFiltering(dateFilteredData);
+    const sortedData = sorting(emotionFilteredData);
+
+    const totalDiaryCnt = sortedData.length;
+    const startIdx = (page - 1) * process.env.REACT_APP_PAGE_SIZE;
+    const endIdx =
+      startIdx + process.env.REACT_APP_PAGE_SIZE > sortedData.length
+        ? sortedData.length
+        : startIdx + process.env.REACT_APP_PAGE_SIZE;
+
+    setTotalPage(totalDiaryCnt / process.env.REACT_APP_PAGE_SIZE + 1);
+    setData(sortedData.slice(startIdx, endIdx));
+    // setCurPage(page);
   };
 
   useEffect(() => {
-    if (localStorage.getItem("access_token")) {
+    if (login) {
       getPage(1);
     } else {
+      getPageFromLocal(1);
     }
-  }, [sortType, filter, curDate]);
+  }, [login, sortType, filter, curDate]);
+
+  useEffect(() => {
+    if (login) {
+      getPage(curPage);
+    } else {
+      getPageFromLocal(curPage);
+    }
+  }, [curPage]);
 
   const increaseMonth = () => {
     setCurDate(
@@ -78,7 +146,7 @@ const Home = () => {
       <PageNumber
         currentPage={curPage}
         totalPageCount={totalPage}
-        onClick={getPage}
+        onClick={setCurPage}
       />
     </div>
   );
