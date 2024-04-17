@@ -10,6 +10,7 @@ import { putDiary } from "../apis/putDiary";
 import { postDiary } from "../apis/postDiary";
 import { useDropzone } from "react-dropzone";
 import "../external.css";
+import { DiaryStateContext, DiaryDispatchContext } from "../App";
 
 const DiaryEditor = ({ isEdit, originData, id }) => {
   const contentRef = useRef();
@@ -17,7 +18,8 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
   const [emotion, setEmotion] = useState(3);
   const navigator = useNavigate();
   const [date, setDate] = useState(getStrDate(new Date()));
-
+  const { login } = useContext(DiaryStateContext);
+  const { onCreate, onEdit, onRemove } = useContext(DiaryDispatchContext);
   // 이미지
   const [files, setFiles] = useState([]);
   const { getRootProps, getInputProps } = useDropzone({
@@ -30,11 +32,20 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
 
         reader.onabort = () => console.log("file reading was aborted");
         reader.onerror = () => console.log("file reading has failed");
-        reader.onload = () => {
+        reader.onload = (event) => {
           // Do whatever you want with the file contents
-          const binaryStr = reader.result;
+          // const binaryStr = reader.result;
+
+          console.log(event.target.result);
+          if (!login) {
+            Object.assign(file, { base64URL: event.target.result });
+          }
         };
-        reader.readAsArrayBuffer(file);
+        if (login) {
+          reader.readAsArrayBuffer(file);
+        } else {
+          reader.readAsDataURL(file);
+        }
       });
 
       const droppedFiles = acceptedFiles.map((file) =>
@@ -59,19 +70,16 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
     maxSize: 10000000, //10MB
     // maxSize: 500000,
     onError: (error) => {
-      console.log("에러");
       console.log(error);
     },
     onDropRejected: (fileRejections) => {
       fileRejections.forEach((f) => {
-        console.log("거부");
         console.log(f.errors);
       });
     },
   });
 
   const handleClickThumbs = (fileName) => {
-    console.log(fileName + " 삭제");
     const newFiles = files.filter((f) => {
       return f.name != fileName;
     });
@@ -124,46 +132,54 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
         isEdit ? `${originData.id}번 일기를 수정할까요?` : `일기를 등록할까요?`
       )
     ) {
-      if (isEdit) {
-        //!수정
-        const formData = new FormData();
+      if (login) {
+        if (isEdit) {
+          //!수정
+          const formData = new FormData();
 
-        const diaryData = {
-          regDate: date + ` 00:00`,
-          emotion: emotion,
-          content: content,
-        };
-        const diaryDto = JSON.stringify(diaryData);
-        formData.append(
-          "diary-put-dto",
-          new Blob([diaryDto], { type: "application/json" })
-        );
+          const diaryData = {
+            regDate: date + ` 00:00`,
+            emotion: emotion,
+            content: content,
+          };
+          const diaryDto = JSON.stringify(diaryData);
+          formData.append(
+            "diary-put-dto",
+            new Blob([diaryDto], { type: "application/json" })
+          );
 
-        for (const imageFile of files) {
-          formData.append("diary-images", imageFile);
+          for (const imageFile of files) {
+            formData.append("diary-images", imageFile);
+          }
+
+          const res = await putDiary(id, "multipart/form-data", formData);
+        } else {
+          //!생성
+          const formData = new FormData();
+
+          const diaryData = {
+            regDate: date + ` 00:00`,
+            emotion: emotion,
+            content: content,
+          };
+          const diaryDto = JSON.stringify(diaryData);
+          formData.append(
+            "diary-post-dto",
+            new Blob([diaryDto], { type: "application/json" })
+          );
+
+          for (const imageFile of files) {
+            formData.append("diary-images", imageFile);
+          }
+
+          const res = await postDiary("multipart/form-data", formData);
         }
-
-        const res = await putDiary(id, "multipart/form-data", formData);
       } else {
-        //!생성
-        const formData = new FormData();
-
-        const diaryData = {
-          regDate: date + ` 00:00`,
-          emotion: emotion,
-          content: content,
-        };
-        const diaryDto = JSON.stringify(diaryData);
-        formData.append(
-          "diary-post-dto",
-          new Blob([diaryDto], { type: "application/json" })
-        );
-
-        for (const imageFile of files) {
-          formData.append("diary-images", imageFile);
+        if (isEdit) {
+          onEdit(originData.id, date, content, emotion, files);
+        } else {
+          onCreate(date, content, emotion, files);
         }
-
-        const res = await postDiary("multipart/form-data", formData);
       }
     }
     navigator("/", { replace: true }); //홈으로 보내는데, 홈으로 갔을 때, 뒤로가기로 일기작성 페이지로 돌아오지 못하게 두번째 인자로 옵션을 줌
@@ -173,14 +189,17 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
     const res = await fetch(url);
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
-
     const blobResponse = await fetch(blobUrl);
+    console.log("블랍리스폰스");
+    console.log(blobResponse);
     const fileBlob = await blobResponse.blob();
+    console.log(blobUrl);
     URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
     const file = new File([fileBlob], fileName);
+
     return file;
   };
-  const initFiles = async () => {
+  const initFilesFromServer = async () => {
     let fs = [];
     for (let i = 0; i < originData.images.length; i++) {
       const file = await getImageData(
@@ -193,6 +212,35 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       });
       fs.push(file);
     }
+
+    setFiles(fs);
+  };
+
+  const initFilesFromLocal = async () => {
+    let fs = [];
+
+    for (let i = 0; i < originData.images.length; i++) {
+      const img = originData.images[i];
+
+      const decodedImage = atob(img.url.split(",")[1]);
+      const uint8Array = new Uint8Array(decodedImage.length);
+      for (let i = 0; i < decodedImage.length; i++) {
+        uint8Array[i] = decodedImage.charCodeAt(i);
+      }
+      const blob = new Blob([uint8Array]);
+
+      const blobUrl = URL.createObjectURL(blob);
+      const blobResponse = await fetch(blobUrl);
+      const fileBlob = await blobResponse.blob();
+
+      URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
+      const file = new File([fileBlob], img.originalFileName);
+      Object.assign(file, {
+        preview: URL.createObjectURL(file),
+      });
+
+      fs.push(file);
+    }
     setFiles(fs);
   };
 
@@ -201,7 +249,12 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       setDate(getStrDate(new Date(parseInt(originData.date))));
       setEmotion(originData.emotion);
       setContent(originData.content);
-      initFiles();
+
+      if (login) {
+        initFilesFromServer();
+      } else {
+        initFilesFromLocal();
+      }
     }
   }, []);
 

@@ -4,16 +4,30 @@ import { DiaryStateContext } from "../App";
 import DiaryEditor from "../components/DiaryEditor";
 import LoginHeader from "../components/LoginHeader";
 import { getDiaryDetail } from "../apis/getDiaryDetail";
-import { getMappingDiaryDetail } from "../util/mapping";
+import {
+  getMappingDiaryDetailFromServer,
+  getMappingDiaryDetailFromLocal,
+} from "../util/mapping";
 
 const Edit = () => {
   const [originData, setOriginData] = useState();
   const { id } = useParams();
+  const { login, localData } = useContext(DiaryStateContext);
 
   const getDiary = async (id) => {
     const diaryDetailData = await getDiaryDetail(id);
-    const mappedData = getMappingDiaryDetail(diaryDetailData);
 
+    const mappedData = getMappingDiaryDetailFromServer(diaryDetailData);
+
+    setOriginData(mappedData);
+  };
+
+  const getDiaryLocal = (id) => {
+    const targetDiary = localData.find(
+      (it) => parseInt(it.id) === parseInt(id)
+    );
+
+    const mappedData = getMappingDiaryDetailFromLocal(targetDiary);
     setOriginData(mappedData);
   };
 
@@ -23,11 +37,12 @@ const Edit = () => {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("access_token")) {
+    if (login) {
       getDiary(id);
     } else {
+      getDiaryLocal(id);
     }
-  }, [id]);
+  }, [id, localData]);
 
   return (
     <div>

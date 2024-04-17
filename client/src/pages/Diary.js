@@ -7,7 +7,7 @@ import MyButton from "../components/MyButton";
 import { emotionList } from "../util/emotion";
 import LoginHeader from "../components/LoginHeader";
 import { getDiaryDetail } from "../apis/getDiaryDetail";
-import { getMappingDiaryDetail } from "../util/mapping";
+import { getMappingDiaryDetailFromServer } from "../util/mapping";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 
@@ -15,12 +15,21 @@ const Diary = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [data, setData] = useState();
+  const { login, localData } = useContext(DiaryStateContext);
 
   const getDiary = async (id) => {
     const diaryDetailData = await getDiaryDetail(id);
-    const mappingData = getMappingDiaryDetail(diaryDetailData);
-    console.log(mappingData.images);
+    const mappingData = getMappingDiaryDetailFromServer(diaryDetailData);
+
     setData(mappingData);
+  };
+
+  const getDiaryFromLocal = (id) => {
+    const targetDiary = localData.find(
+      (it) => parseInt(it.id) === parseInt(id)
+    );
+
+    setData(targetDiary);
   };
 
   useEffect(() => {
@@ -29,9 +38,10 @@ const Diary = () => {
   }, []);
 
   useEffect(() => {
-    if (localStorage.getItem("access_token")) {
+    if (login) {
       getDiary(id);
     } else {
+      getDiaryFromLocal(id);
     }
   }, [id]);
 
@@ -81,12 +91,16 @@ const Diary = () => {
             <div className="diary_image_wrapper">
               {data.images.length > 0 ? (
                 <ImageGallery
-                  items={data.images.map((diaryImageDTO) => {
+                  items={data.images.map((diaryImage) => {
                     return {
                       original:
-                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
+                        login === true
+                          ? process.env.REACT_APP_API_BASE_URL + diaryImage.url
+                          : diaryImage.url,
                       thumbnail:
-                        process.env.REACT_APP_API_BASE_URL + diaryImageDTO.url,
+                        login === true
+                          ? process.env.REACT_APP_API_BASE_URL + diaryImage.url
+                          : diaryImage.url,
                     };
                   })}
                 />

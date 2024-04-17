@@ -18,18 +18,21 @@ function App() {
     localStorage.getItem("access_token") === null ? false : true
   );
   const [localData, setLocalData] = useReducer(reducer, []);
+  const dataId = useRef(1);
 
+  //로그인 여부에 따라 로컬 데이터 init과 로컬 데이터 삭제의 기능을 함.
   useEffect(() => {
-    console.log("App 생성자");
-
     if (!login) {
-      const localData = JSON.parse(localStorage.getItem("diary"));
+      const storageData = JSON.parse(localStorage.getItem("diary"));
+      let localData = [];
+      if (storageData !== null) {
+        dataId.current = storageData[0].id + 1;
+        localData = storageData;
+      }
       setLocalData({
         type: "INIT",
         data: localData,
       });
-      console.log("App : ");
-      console.log(localData);
     } else {
       setLocalData({
         type: "INIT",
@@ -38,9 +41,31 @@ function App() {
     }
   }, [login]);
 
+  const onCreate = (date, content, emotion, images) => {
+    const mappingImgData = images.map((it) => {
+      return {
+        originalFileName: it.name,
+        url: it.base64URL,
+      };
+    });
+
+    setLocalData({
+      type: "CREATE",
+      data: {
+        id: dataId.current++,
+        date: new Date(date).getTime(),
+        content,
+        emotion,
+        images: mappingImgData,
+      },
+    });
+  };
+
+  const onEdit = (id, date, content, emotion, images) => {};
+
   return (
     <DiaryStateContext.Provider value={{ login, localData }}>
-      <DiaryDispatchContext.Provider value={{ setLogin }}>
+      <DiaryDispatchContext.Provider value={{ setLogin, onCreate, onEdit }}>
         <BrowserRouter>
           <div className="App">
             <Routes>

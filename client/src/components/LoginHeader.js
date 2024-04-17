@@ -27,7 +27,7 @@ const logoutButton = () => {
 
 const LoginHeader = () => {
   return (
-    <div>
+    <div className="LoginHeader">
       {!localStorage.getItem("access_token") ? loginButtons() : logoutButton()}
     </div>
 

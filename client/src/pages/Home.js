@@ -34,7 +34,7 @@ const Home = () => {
     const pageSize = process.env.REACT_APP_PAGE_SIZE;
     const url = `page=${page}&size=${pageSize}&date=${formattedDate}&sort=${sortType}&emotion=${filter}`;
     const diaryPageData = await getDiaryPageData(url);
-    console.log(diaryPageData);
+
     const totalPageCount = getTotalPageCnt(
       diaryPageData.diaryTotalCount,
       pageSize
@@ -43,7 +43,6 @@ const Home = () => {
     const diaryList = getMappingDiaryListFromServer(diaryPageData.diaryList);
     setTotalPage(totalPageCount);
     setData(diaryList);
-    // setCurPage(page);
   };
 
   const datefiltering = (diaryList) => {
@@ -96,8 +95,8 @@ const Home = () => {
         : startIdx + process.env.REACT_APP_PAGE_SIZE;
 
     setTotalPage(totalDiaryCnt / process.env.REACT_APP_PAGE_SIZE + 1);
-    setData(sortedData.slice(startIdx, endIdx));
-    // setCurPage(page);
+    const finishData = sortedData.slice(startIdx, endIdx);
+    setData(finishData);
   };
 
   useEffect(() => {
@@ -106,15 +105,17 @@ const Home = () => {
     } else {
       getPageFromLocal(1);
     }
-  }, [login, sortType, filter, curDate]);
+  }, [login, sortType, filter, curDate, localData]);
 
-  useEffect(() => {
+  const onClickPageButton = (page) => {
+    //페이지 버튼 눌렀을 때
+
     if (login) {
-      getPage(curPage);
+      getPage(page);
     } else {
-      getPageFromLocal(curPage);
+      getPageFromLocal(page);
     }
-  }, [curPage]);
+  };
 
   const increaseMonth = () => {
     setCurDate(
@@ -146,7 +147,7 @@ const Home = () => {
       <PageNumber
         currentPage={curPage}
         totalPageCount={totalPage}
-        onClick={setCurPage}
+        onClick={onClickPageButton}
       />
     </div>
   );
