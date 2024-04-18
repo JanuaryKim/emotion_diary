@@ -1,4 +1,6 @@
 import React, { useState, useReducer, useRef, useEffect } from "react";
+import { IndexedDBConfig } from "./config/IndexedDBConfig";
+import { initDB, useIndexedDB } from "react-indexed-db-hook";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import New from "./pages/New";
@@ -6,33 +8,29 @@ import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import Home from "./pages/Home";
 import SaveToken from "./pages/SaveToken";
-import Test from "./pages/Test";
 import Reset from "./pages/Reset";
 import { reducer } from "./util/localReducer";
-import { type } from "@testing-library/user-event/dist/type";
 export const DiaryStateContext = React.createContext(null);
 export const DiaryDispatchContext = React.createContext(null);
+
+initDB(IndexedDBConfig);
 
 function App() {
   const [login, setLogin] = useState(
     localStorage.getItem("access_token") === null ? false : true
   );
   const [localData, setLocalData] = useReducer(reducer, []);
+  const { getAll, add } = useIndexedDB("diary");
   const dataId = useRef(1);
 
   //로그인 여부에 따라 로컬 데이터 init과 로컬 데이터 삭제의 기능을 함.
+
   useEffect(() => {
     if (!login) {
-      const storageData = JSON.parse(localStorage.getItem("diary"));
-      let localData = [];
-      if (storageData !== null) {
-        dataId.current = storageData[0].id + 1;
-        localData = storageData;
-      }
-      setLocalData({
-        type: "INIT",
-        data: localData,
-      });
+      console.log("로그인 아님");
+      getAll().then((emotionDiary) =>
+        setLocalData({ type: "INIT", data: emotionDiary })
+      );
     } else {
       setLocalData({
         type: "INIT",
@@ -52,12 +50,13 @@ function App() {
     setLocalData({
       type: "CREATE",
       data: {
-        id: dataId.current++,
         date: new Date(date).getTime(),
         content,
         emotion,
         images: mappingImgData,
       },
+      add,
+      getAll,
     });
   };
 
@@ -74,7 +73,6 @@ function App() {
               <Route path="/diary/:id" element={<Diary />} />
               <Route path="/edit/:id" element={<Edit />} />
               <Route path="/saveToken" element={<SaveToken />} />
-              <Route path="/Test" element={<Test />} />
               <Route path="/Reset" element={<Reset />} />
             </Routes>
           </div>

@@ -36,7 +36,6 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           // Do whatever you want with the file contents
           // const binaryStr = reader.result;
 
-          console.log(event.target.result);
           if (!login) {
             Object.assign(file, { base64URL: event.target.result });
           }

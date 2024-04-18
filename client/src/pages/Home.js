@@ -7,10 +7,7 @@ import DiaryList from "../components/DiaryList";
 import LoginHeader from "../components/LoginHeader";
 import PageNumber from "../components/PageNumber";
 import { getTotalPageCnt } from "../util/page";
-import {
-  getMappingDiaryListFromServer,
-  getMappingDiaryListFromLocal,
-} from "../util/mapping";
+import { getMappingDiaryListFromServer } from "../util/mapping";
 
 const Home = () => {
   useEffect(() => {
@@ -83,6 +80,7 @@ const Home = () => {
   };
 
   const getPageFromLocal = async (page) => {
+    console.log(localData);
     const dateFilteredData = datefiltering(localData);
     const emotionFilteredData = emotionFiltering(dateFilteredData);
     const sortedData = sorting(emotionFilteredData);

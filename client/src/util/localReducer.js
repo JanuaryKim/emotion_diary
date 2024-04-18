@@ -1,10 +1,13 @@
 export const reducer = (state, action) => {
-  let newState = [];
+  let newState;
   switch (action.type) {
     case "INIT":
       return action.data;
     case "CREATE":
-      newState = [action.data, ...state];
+      action
+        .add(action.data)
+        .then((event) => console.log(`${event} 일기 추가`));
+      newState = [...state, action.data];
       break;
     case "EDIT":
       newState = state.map((it) => {
@@ -18,6 +21,5 @@ export const reducer = (state, action) => {
       return state;
   }
 
-  localStorage.setItem("diary", JSON.stringify(newState));
   return newState;
 };
