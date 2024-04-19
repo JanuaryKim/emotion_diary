@@ -62,8 +62,6 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       }
 
       const newFiles = [...files, ...droppedFiles];
-      console.log("이미지 드랍 후");
-      console.log(newFiles);
 
       setFiles(newFiles);
     },
@@ -116,8 +114,11 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
 
   const handleRemove = async () => {
     if (window.confirm(`정말 삭제할까요?`)) {
-      //!삭제
-      const res = await deleteDiary(id);
+      if (login) {
+        const res = await deleteDiary(id);
+      } else {
+        onRemove(originData.id);
+      }
       navigator(`/`, { replace: true });
     }
   };
@@ -237,6 +238,7 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       const file = new File([fileBlob], img.originalFileName);
       Object.assign(file, {
         preview: URL.createObjectURL(file),
+        base64URL: img.url,
       });
 
       fs.push(file);

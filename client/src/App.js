@@ -9,7 +9,6 @@ import Edit from "./pages/Edit";
 import Home from "./pages/Home";
 import SaveToken from "./pages/SaveToken";
 import Reset from "./pages/Reset";
-// import { reducer } from "./util/localReducer";
 import { getMappingDiaryImages } from "./util/mapping";
 export const DiaryStateContext = React.createContext(null);
 export const DiaryDispatchContext = React.createContext(null);
@@ -21,7 +20,7 @@ function App() {
     localStorage.getItem("access_token") === null ? false : true
   );
   const [localData, setLocalData] = useState([]);
-  const { getAll, add, update } = useIndexedDB("diary");
+  const { getAll, add, update, deleteRecord } = useIndexedDB("diary");
 
   //로그인 여부에 따라 로컬 데이터 init과 로컬 데이터 삭제의 기능을 함.
 
@@ -68,9 +67,16 @@ function App() {
     getAll().then((emotionDiary) => setLocalData(emotionDiary));
   };
 
+  const onRemove = (id) => {
+    deleteRecord(id).then((event) => console.log(event));
+    getAll().then((emotionDiary) => setLocalData(emotionDiary));
+  };
+
   return (
     <DiaryStateContext.Provider value={{ login, localData }}>
-      <DiaryDispatchContext.Provider value={{ setLogin, onCreate, onEdit }}>
+      <DiaryDispatchContext.Provider
+        value={{ setLogin, onCreate, onEdit, onRemove }}
+      >
         <BrowserRouter>
           <div className="App">
             <Routes>
