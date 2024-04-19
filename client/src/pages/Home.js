@@ -80,7 +80,6 @@ const Home = () => {
   };
 
   const getPageFromLocal = async (page) => {
-    console.log(localData);
     const dateFilteredData = datefiltering(localData);
     const emotionFilteredData = emotionFiltering(dateFilteredData);
     const sortedData = sorting(emotionFilteredData);
@@ -94,6 +93,7 @@ const Home = () => {
 
     setTotalPage(totalDiaryCnt / process.env.REACT_APP_PAGE_SIZE + 1);
     const finishData = sortedData.slice(startIdx, endIdx);
+
     setData(finishData);
   };
 

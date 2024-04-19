@@ -62,6 +62,8 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       }
 
       const newFiles = [...files, ...droppedFiles];
+      console.log("이미지 드랍 후");
+      console.log(newFiles);
 
       setFiles(newFiles);
     },
@@ -189,10 +191,9 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     const blobResponse = await fetch(blobUrl);
-    console.log("블랍리스폰스");
-    console.log(blobResponse);
+
     const fileBlob = await blobResponse.blob();
-    console.log(blobUrl);
+
     URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
     const file = new File([fileBlob], fileName);
 
@@ -240,6 +241,9 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
 
       fs.push(file);
     }
+
+    console.log("수정 데이터");
+    console.log(fs);
     setFiles(fs);
   };
 

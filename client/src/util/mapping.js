@@ -40,3 +40,12 @@ export const getMappingDiaryDetailFromLocal = (it) => {
     images: it.images,
   };
 };
+
+export const getMappingDiaryImages = (images) => {
+  return images.map((it) => {
+    return {
+      originalFileName: it.name,
+      url: it.base64URL,
+    };
+  });
+};
