@@ -36,7 +36,6 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           // Do whatever you want with the file contents
           // const binaryStr = reader.result;
 
-          console.log(event.target.result);
           if (!login) {
             Object.assign(file, { base64URL: event.target.result });
           }
@@ -115,8 +114,11 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
 
   const handleRemove = async () => {
     if (window.confirm(`정말 삭제할까요?`)) {
-      //!삭제
-      const res = await deleteDiary(id);
+      if (login) {
+        const res = await deleteDiary(id);
+      } else {
+        onRemove(originData.id);
+      }
       navigator(`/`, { replace: true });
     }
   };
@@ -190,10 +192,9 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
     const blob = await res.blob();
     const blobUrl = URL.createObjectURL(blob);
     const blobResponse = await fetch(blobUrl);
-    console.log("블랍리스폰스");
-    console.log(blobResponse);
+
     const fileBlob = await blobResponse.blob();
-    console.log(blobUrl);
+
     URL.revokeObjectURL(blobUrl); // Blob URL 사용이 끝나면 해제
     const file = new File([fileBlob], fileName);
 
@@ -237,10 +238,14 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
       const file = new File([fileBlob], img.originalFileName);
       Object.assign(file, {
         preview: URL.createObjectURL(file),
+        base64URL: img.url,
       });
 
       fs.push(file);
     }
+
+    console.log("수정 데이터");
+    console.log(fs);
     setFiles(fs);
   };
 

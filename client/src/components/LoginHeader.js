@@ -25,10 +25,23 @@ const logoutButton = () => {
   return <LogoutButton />;
 };
 
+const stateLabel = (labelString, className) => {
+  return <button className={className}>{labelString}</button>;
+};
+
 const LoginHeader = () => {
   return (
     <div className="LoginHeader">
-      {!localStorage.getItem("access_token") ? loginButtons() : logoutButton()}
+      <div className="btn_left">
+        {!localStorage.getItem("access_token")
+          ? stateLabel("비로그인 모드", "StateLogout")
+          : stateLabel("로그인 모드", "StateLogin")}
+      </div>
+      <div className="btn_right">
+        {!localStorage.getItem("access_token")
+          ? loginButtons()
+          : logoutButton()}
+      </div>
     </div>
 
     // <div>

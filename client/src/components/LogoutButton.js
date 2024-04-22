@@ -11,7 +11,11 @@ const LogoutButton = () => {
     navigator("/Reset", { replace: true });
   };
 
-  return <button onClick={() => logout()}>로그아웃</button>;
+  return (
+    <button className="MyButton LogoutButton" onClick={() => logout()}>
+      로그아웃
+    </button>
+  );
 };
 
 export default LogoutButton;

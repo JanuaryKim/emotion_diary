@@ -28,6 +28,10 @@ const Edit = () => {
     );
 
     const mappedData = getMappingDiaryDetailFromLocal(targetDiary);
+
+    console.log("수정 페이지에 넘어갈 데이터");
+    console.log(mappedData);
+    console.log(id);
     setOriginData(mappedData);
   };
 

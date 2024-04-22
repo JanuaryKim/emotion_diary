@@ -1,6 +1,7 @@
 import PageButton from "./PageButton";
 
 const renderPages = (currentPage, totalPageCount, onClick) => {
+  console.log("현재 페이지 " + currentPage);
   let idx = 0;
   const elements = [];
 
@@ -47,7 +48,11 @@ const renderPages = (currentPage, totalPageCount, onClick) => {
 
 //하위 페이지 넘버 출력하는 컴포넌트
 const PageNumber = ({ currentPage, totalPageCount, onClick }) => {
-  return <div>{renderPages(currentPage, totalPageCount, onClick)}</div>;
+  return (
+    <div className="PageNumber">
+      {renderPages(currentPage, totalPageCount, onClick)}
+    </div>
+  );
 };
 
 export default PageNumber;

@@ -364,3 +364,81 @@ header button {
   font-family: "Yeon Sung";
   line-height: 2.5; /* 줄간의 간격 */
 }
+
+.LoginHeader {
+  margin-top: 10px;
+  display: flex;
+}
+
+.LoginButton {
+  margin-left: 10px;
+}
+
+.PageNumber {
+  justify-content: center;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.PageButton {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px;
+}
+
+.PageButton_positive {
+  background-color: #9dd772;
+  color: white;
+}
+
+.PageButton_default {
+  background-color: #ececec;
+}
+
+.LoginHeader .btn_left {
+  width: 50%;
+}
+
+.LoginHeader .btn_right {
+  display: flex;
+  width: 50%;
+  justify-content: end;
+}
+
+.StateLogout {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #fd565f;
+  color: white;
+}
+
+.StateLogin {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #64c964;
+  color: white;
+}
