@@ -367,9 +367,11 @@ header button {
 
 .LoginHeader {
   margin-top: 10px;
+  display: flex;
 }
+
 .LoginButton {
-  margin-right: 10px;
+  margin-left: 10px;
 }
 
 .PageNumber {
@@ -397,4 +399,46 @@ header button {
 
 .PageButton_default {
   background-color: #ececec;
+}
+
+.LoginHeader .btn_left {
+  width: 50%;
+}
+
+.LoginHeader .btn_right {
+  display: flex;
+  width: 50%;
+  justify-content: end;
+}
+
+.StateLogout {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #fd565f;
+  color: white;
+}
+
+.StateLogin {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #64c964;
+  color: white;
 }
