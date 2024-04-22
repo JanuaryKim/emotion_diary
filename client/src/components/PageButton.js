@@ -3,7 +3,7 @@ const PageButton = ({ type, pageNum, onClick }) => {
 
   return (
     <button
-      className={["PageButton", `PageButton${btnType}`].join(" ")}
+      className={["PageButton", `PageButton_${btnType}`].join(" ")}
       onClick={() => {
         onClick(pageNum);
       }}

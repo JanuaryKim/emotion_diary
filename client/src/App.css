@@ -364,3 +364,36 @@ header button {
   font-family: "Yeon Sung";
   line-height: 2.5; /* 줄간의 간격 */
 }
+
+.LoginHeader {
+  margin-top: 10px;
+}
+.LoginButton {
+  margin-right: 10px;
+}
+
+.PageNumber {
+  justify-content: center;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.PageButton {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px;
+}
+
+.PageButton_positive {
+  background-color: blue;
+}
+
+.PageButton_default {
+  background-color: #ececec;
+}
