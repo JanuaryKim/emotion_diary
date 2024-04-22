@@ -391,7 +391,8 @@ header button {
 }
 
 .PageButton_positive {
-  background-color: blue;
+  background-color: #9dd772;
+  color: white;
 }
 
 .PageButton_default {

@@ -98,6 +98,7 @@ const Home = () => {
   };
 
   useEffect(() => {
+    setCurPage(1);
     if (login) {
       getPage(1);
     } else {
@@ -107,7 +108,7 @@ const Home = () => {
 
   const onClickPageButton = (page) => {
     //페이지 버튼 눌렀을 때
-
+    setCurPage(page);
     if (login) {
       getPage(page);
     } else {
