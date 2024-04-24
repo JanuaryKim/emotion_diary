@@ -7,7 +7,8 @@ import emotion.diary.server.diary.entity.Diary;
 import emotion.diary.server.diary.entity.DiaryImage;
 import emotion.diary.server.diary.mapper.DiaryMapper;
 import emotion.diary.server.diary.service.DiaryService;
-import jakarta.validation.constraints.NotNull;
+import emotion.diary.server.exception.BusinessException;
+import emotion.diary.server.exception.ExceptionCode;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,6 +34,10 @@ public class DiaryController {
                                         @RequestPart(value = "diary-images",required = false) MultipartFile[] diaryImages,
                                          Principal principal
                                         ) throws IOException {
+
+        //삭제
+        if(diaryImages == null)
+            throw new BusinessException(ExceptionCode.NOT_EXISTS_DIARY);
 
         String memberId = principal.getName();
         diaryImages = diaryImages == null ? new MultipartFile[0] : diaryImages; //값이 아예 안 넘어 와 null 경우 대비
