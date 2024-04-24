@@ -124,7 +124,10 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
   };
 
   const handleClickSubmit = async () => {
-    if (content.length < 1) {
+    if (
+      content.length < 1 ||
+      content.length > process.env.REACT_APP_MAX_CONTENT_LENGTH
+    ) {
       contentRef.current.focus();
       return;
     }
@@ -320,7 +323,8 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
           <h2>오늘의 일기</h2>
           <div className="input_box text_wrapper">
             <textarea
-              placeholder="오늘은 어땟나요"
+              maxLength={process.env.REACT_APP_MAX_CONTENT_LENGTH}
+              placeholder="오늘은 어땟나요 (150자 이내)"
               onChange={(e) => setContent(e.target.value)}
               ref={contentRef}
               value={content}

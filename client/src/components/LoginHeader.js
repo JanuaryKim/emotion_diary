@@ -43,12 +43,6 @@ const LoginHeader = () => {
           : logoutButton()}
       </div>
     </div>
-
-    // <div>
-    //   {socialType.map((socialObj, idx) => {
-    //     return <LoginButton key={idx} social={socialObj} />;
-    //   })}
-    // </div>
   );
 };
 
