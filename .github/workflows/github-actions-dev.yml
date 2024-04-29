@@ -31,6 +31,8 @@ jobs:
           emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
           emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
         run: |
+          echo print env_variable
           echo $mysql_url
+          echo mysql_id
           cd server
           ./gradlew build test
