@@ -9,7 +9,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class DiaryPageDTO {
+public class DiaryPageResponseDTO {
 
     private Long diaryTotalCount;
 

@@ -1,9 +1,8 @@
 package emotion.diary.server.diary.mapper;
 
 import emotion.diary.server.diary.dto.DiaryDTO;
-import emotion.diary.server.diary.dto.DiaryPageDTO;
+import emotion.diary.server.diary.dto.DiaryPageResponseDTO;
 import emotion.diary.server.diary.entity.Diary;
-import emotion.diary.server.diary.entity.DiaryImage;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -24,8 +23,8 @@ public interface DiaryMapper {
 
     public List<DiaryDTO.Response> diaryPageToDiaryDTOResponseList(List<Diary> diaryList);
 
-    default DiaryPageDTO diaryDTOResponseListToDiaryPageDTO(Long diaryTotalCount, List<DiaryDTO.Response> diaryDTOResponseList){
+    default DiaryPageResponseDTO diaryDTOResponseListToDiaryPageDTO(Long diaryTotalCount, List<DiaryDTO.Response> diaryDTOResponseList){
 
-        return DiaryPageDTO.builder().diaryTotalCount(diaryTotalCount).diaryList(diaryDTOResponseList).build();
+        return DiaryPageResponseDTO.builder().diaryTotalCount(diaryTotalCount).diaryList(diaryDTOResponseList).build();
     }
 }
