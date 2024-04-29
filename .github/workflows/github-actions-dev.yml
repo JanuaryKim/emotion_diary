@@ -21,8 +21,7 @@ jobs:
         run: chmod +x ./server/gradlew
         shell: bash
 
-      - name : debug
-        run: echo pwd
-
       - name: Build and Test
-        run: ./server/gradlew build test
+        run:
+          - cd ./server
+          - ./gradlew build test
