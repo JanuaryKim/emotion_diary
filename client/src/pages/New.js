@@ -1,5 +1,7 @@
 import DiaryEditor from "../components/DiaryEditor";
 import { useEffect } from "react";
+import LoginHeader from "../components/LoginHeader";
+
 const New = () => {
   useEffect(() => {
     const titleElements = document.getElementsByTagName("title")[0];
@@ -8,6 +10,7 @@ const New = () => {
 
   return (
     <div>
+      <LoginHeader />
       <DiaryEditor />
     </div>
   );

@@ -32,33 +32,8 @@ const ControlMenu = React.memo(({ sortType, onChange, optionList }) => {
   );
 });
 
-const DiaryList = ({ diaryList }) => {
+const DiaryList = ({ diaryList, sortType, setSortType, filter, setFilter }) => {
   const navigate = useNavigate();
-  const [sortType, setSortType] = useState("latest");
-  const [filter, setFilter] = useState("all");
-
-  const getDiaryList = () => {
-    const filtering = (it) => {
-      if (filter === "good") {
-        return it.emotion <= 3;
-      } else {
-        return it.emotion > 3;
-      }
-    };
-
-    const compare = (d1, d2) => {
-      if (sortType === "latest") {
-        return parseInt(d2.date) - parseInt(d1.date); //문자열로 들어올지도 몰라서 parseInt
-      } else {
-        return parseInt(d1.date) - parseInt(d2.date);
-      }
-    };
-    const copyList = JSON.parse(JSON.stringify(diaryList)); //일기리스트 깊은 복사
-
-    const filtedList = filter === "all" ? copyList : copyList.filter(filtering);
-
-    return filtedList.sort(compare);
-  };
 
   return (
     <div className="DiaryList">
@@ -84,22 +59,11 @@ const DiaryList = ({ diaryList }) => {
         </div>
       </div>
 
-      {getDiaryList().map((it) => {
+      {diaryList.map((it) => {
         return <DiaryItem key={it.id} {...it} />;
       })}
     </div>
   );
-};
-
-DiaryList.defaultProps = {
-  diaryList: [
-    {
-      id: 0,
-      date: 2208439681845,
-      content: "기본 데이터",
-      emotion: 3,
-    },
-  ],
 };
 
 export default DiaryList;

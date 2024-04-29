@@ -1,91 +1,82 @@
-import React, { useReducer, useRef, useEffect } from "react";
+import React, { useState, useReducer, useRef, useEffect } from "react";
+import { IndexedDBConfig } from "./config/IndexedDBConfig";
+import { initDB, useIndexedDB } from "react-indexed-db-hook";
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import New from "./pages/New";
 import Diary from "./pages/Diary";
 import Edit from "./pages/Edit";
 import Home from "./pages/Home";
-
-const reducer = (state, action) => {
-  let newState = [];
-  switch (action.type) {
-    case "INIT":
-      return action.data;
-    case "CREATE":
-      newState = [action.data, ...state];
-      break;
-    case "EDIT":
-      newState = state.map((it) =>
-        it.id === action.targetId ? { ...action.data } : it
-      );
-      break;
-    case "REMOVE":
-      newState = state.filter((it) => it.id !== action.targetId);
-      break;
-    default:
-      return state;
-  }
-
-  localStorage.setItem("diary", JSON.stringify(newState));
-  return newState;
-};
-
+import SaveToken from "./pages/SaveToken";
+import Reset from "./pages/Reset";
+import { getMappingDiaryImages } from "./util/mapping";
 export const DiaryStateContext = React.createContext(null);
 export const DiaryDispatchContext = React.createContext(null);
 
+initDB(IndexedDBConfig);
+
 function App() {
-  const [data, dispatch] = useReducer(reducer, []);
+  const [login, setLogin] = useState(
+    localStorage.getItem("access_token") === null ? false : true
+  );
+  const [localData, setLocalData] = useState([]);
+  const { getAll, add, update, deleteRecord } = useIndexedDB("diary");
 
-  const dataId = useRef(1);
+  //로그인 여부에 따라 로컬 데이터 init과 로컬 데이터 삭제의 기능을 함.
 
+  const initFromLocalData = () => {
+    getAll().then((emotionDiary) => {
+      setLocalData(emotionDiary);
+    });
+  };
   useEffect(() => {
-    const localData = JSON.parse(localStorage.getItem(`diary`));
-
-    if (localData) {
-      dispatch({
-        type: "INIT",
-        data: localData,
-      });
-      const diaryData = localData.sort((a, b) => b.id - a.id);
-      if (diaryData.length > 0) dataId.current = diaryData[0].id + 1;
+    if (!login) {
+      initFromLocalData();
+    } else {
+      setLocalData([]);
     }
-  }, []);
+  }, [login]);
 
-  const onCreate = (date, content, emotion) => {
-    dispatch({
-      type: "CREATE",
-      data: {
-        id: dataId.current++,
-        date: new Date(date).getTime(),
-        content,
-        emotion,
-      },
-    });
+  const onCreate = (date, content, emotion, images) => {
+    const mappingImgData = getMappingDiaryImages(images);
+
+    const newDiary = {
+      date: new Date(date).getTime(),
+      content,
+      emotion,
+      images: mappingImgData,
+    };
+
+    add(newDiary);
+    getAll().then((emotionDiary) => setLocalData(emotionDiary));
   };
 
-  const onEdit = (targetId, date, content, emotion) => {
-    dispatch({
-      type: "EDIT",
-      targetId,
-      data: {
-        id: targetId,
-        date: new Date(date).getTime(),
-        content,
-        emotion,
-      },
-    });
+  const onEdit = (id, date, content, emotion, images) => {
+    console.log("업데이트할 이미지");
+    console.log(images);
+    const mappingImgData = getMappingDiaryImages(images);
+
+    const updateDiary = {
+      id: id,
+      date: new Date(date).getTime(),
+      content,
+      emotion,
+      images: mappingImgData,
+    };
+    update(updateDiary);
+    getAll().then((emotionDiary) => setLocalData(emotionDiary));
   };
 
-  const onRemove = (targetId) => {
-    dispatch({
-      type: "REMOVE",
-      targetId,
-    });
+  const onRemove = (id) => {
+    deleteRecord(id).then((event) => console.log(event));
+    getAll().then((emotionDiary) => setLocalData(emotionDiary));
   };
 
   return (
-    <DiaryStateContext.Provider value={data}>
-      <DiaryDispatchContext.Provider value={{ onCreate, onEdit, onRemove }}>
+    <DiaryStateContext.Provider value={{ login, localData }}>
+      <DiaryDispatchContext.Provider
+        value={{ setLogin, onCreate, onEdit, onRemove }}
+      >
         <BrowserRouter>
           <div className="App">
             <Routes>
@@ -93,6 +84,8 @@ function App() {
               <Route path="/new" element={<New />} />
               <Route path="/diary/:id" element={<Diary />} />
               <Route path="/edit/:id" element={<Edit />} />
+              <Route path="/saveToken" element={<SaveToken />} />
+              <Route path="/Reset" element={<Reset />} />
             </Routes>
           </div>
         </BrowserRouter>
