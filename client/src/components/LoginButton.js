@@ -10,7 +10,10 @@ const LoginButton = ({ social }) => {
   };
 
   return (
-    <button onClick={() => login(social.socialEngName)}>
+    <button
+      className="MyButton LoginButton"
+      onClick={() => login(social.socialEngName)}
+    >
       {social.socialKorName} 로그인
     </button>
   );

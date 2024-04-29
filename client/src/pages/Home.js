@@ -7,10 +7,7 @@ import DiaryList from "../components/DiaryList";
 import LoginHeader from "../components/LoginHeader";
 import PageNumber from "../components/PageNumber";
 import { getTotalPageCnt } from "../util/page";
-import {
-  getMappingDiaryListFromServer,
-  getMappingDiaryListFromLocal,
-} from "../util/mapping";
+import { getMappingDiaryListFromServer } from "../util/mapping";
 
 const Home = () => {
   useEffect(() => {
@@ -96,10 +93,12 @@ const Home = () => {
 
     setTotalPage(totalDiaryCnt / process.env.REACT_APP_PAGE_SIZE + 1);
     const finishData = sortedData.slice(startIdx, endIdx);
+
     setData(finishData);
   };
 
   useEffect(() => {
+    setCurPage(1);
     if (login) {
       getPage(1);
     } else {
@@ -109,7 +108,7 @@ const Home = () => {
 
   const onClickPageButton = (page) => {
     //페이지 버튼 눌렀을 때
-
+    setCurPage(page);
     if (login) {
       getPage(page);
     } else {
