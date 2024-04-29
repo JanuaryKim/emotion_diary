@@ -22,7 +22,15 @@ jobs:
         shell: bash
 
       - name: Build and Test
+        env:
+          mysql_url: ${{ secrets.mysql_url }}
+          mysql_id: ${{ secrets.mysql_id }}
+          mysql_pwd: ${{ secrets.mysql_pwd }}
+          image_dir_path: ${{ secrets.image_dir_path }}
+          file_dir_path: ${{ secrets.file_dir_path }}
+          emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
+          emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
         run: |
-          echo $mysql_id
+          echo $mysql_url
           cd server
           ./gradlew build test
