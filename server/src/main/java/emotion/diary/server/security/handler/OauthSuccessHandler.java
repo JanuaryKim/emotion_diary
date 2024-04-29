@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
-//테스트 주석 추가
 import java.io.IOException;
 import java.net.URI;
 import java.util.*;
@@ -33,7 +32,6 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String memberId = customOauth2User.getOAuthAttributes().getMemberId();
         String memberEmail = customOauth2User.getOAuthAttributes().getMemberEmail();
         String socialKind = customOauth2User.getOAuthAttributes().getSocialKind();
-
         Optional<Member> optionalMember = memberService.findMember(memberId);
         Member member;
         if(optionalMember.isPresent()){ //간편 로그인 했던 유저

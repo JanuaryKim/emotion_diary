@@ -12,7 +12,7 @@ public enum ExceptionCode {
     INVALID_JWT_TOKEN(401, "유효하지 않은 토큰"),
 
     NOT_EXISTS_DIARY(404, "존재하지 않는 일기"),
-    NOT_OWN_DIARY(401, "자신 소유의 일기가 아님"),
+    NOT_OWN_DIARY(403, "자신 소유의 일기가 아님"),
     NOT_EXISTS_DIARY_IMAGE_DATA(404, "존재하지 않는 일기 이미지 데이터"),
     NOT_EXISTS_DIARY_IMAGE_FILE(404, "존재하지 않는 일기 이미지 파일");
 
