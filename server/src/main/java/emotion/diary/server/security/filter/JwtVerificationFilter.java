@@ -1,6 +1,10 @@
 package emotion.diary.server.security.filter;
 
+import emotion.diary.server.exception.AuthorityException;
+import emotion.diary.server.exception.ErrorResponse;
+import emotion.diary.server.exception.ExceptionCode;
 import emotion.diary.server.jwt.JwtTokenizer;
+import emotion.diary.server.util.Serializer;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -29,6 +33,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
     private final JwtTokenizer jwtTokenizer;
 
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
@@ -36,30 +41,41 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
 
         if(jws != null) {
             try {
-
-
                 Map<String, Object> claims = jwtTokenizer.getClaims(jws, jwtTokenizer.getSecretKey()).getBody();
 //            verifyLogoutToken(jws); 로그아웃한 토큰인지 체크
                 setAuthenticationToContext(claims);
-
             } catch (SignatureException se) {
-
-                System.out.println(se);
+                System.out.println(se.getMessage());
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.WRONG_SIGNATURE_JWT_TOKEN,se.getMessage()));
+                return;
             } catch (ExpiredJwtException ee) {
-
-                System.out.println(ee);
+                System.out.println(ee.getMessage());
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.EXPIRED_JWT_TOKEN, ee.getMessage()));
+                return;
             } catch (MalformedJwtException me) {
-
-                System.out.println(me);
+                System.out.println(me.getMessage());
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.MALFORMED_JWT_TOKEN, me.getMessage()));
+                return;
             } catch (UnsupportedJwtException ue) {
-
-                System.out.println(ue);
+                System.out.println(ue.getMessage());
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.NOT_SUPPORTED_JWT_TOKEN, ue.getMessage()));
+                return;
             } catch (RuntimeException e) {
-                System.out.println(e);
+                System.out.println(e.getMessage());
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.WRONG_SIGNATURE_JWT_TOKEN, e.getMessage()));
+                return;
             }
         }
-
         filterChain.doFilter(request, response);
+    }
+
+    private void handleAuthorityException(HttpServletResponse  response, AuthorityException authorityException) throws IOException {
+
+        ErrorResponse errorResponse = ErrorResponse.of(authorityException.getStatus(), authorityException.getSentence());
+        response.setStatus(authorityException.getStatus());
+        String json = Serializer.toJson(errorResponse);
+        response.setContentType("application/json; charset=UTF-8"); //브라우저에게 json 형태이며, utf-8 형식으로 인코딩 되어 있음을 알림
+        response.getWriter().write(json);
     }
 
     private void setAuthenticationToContext(Map<String, Object> claims) {

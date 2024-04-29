@@ -4,6 +4,8 @@ import emotion.diary.server.diary.entity.Diary;
 import emotion.diary.server.diary.entity.DiaryImage;
 import emotion.diary.server.diary.repository.DiaryImageRepository;
 import emotion.diary.server.diary.repository.DiaryRepository;
+import emotion.diary.server.exception.BusinessException;
+import emotion.diary.server.exception.ExceptionCode;
 import emotion.diary.server.member.entity.Member;
 import emotion.diary.server.util.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +64,9 @@ public class DiaryService {
         return dbSaveUrl;
     }
 
-    public void modifyDiary(Diary diary, Long modifyDiaryId) {
+    public void modifyDiary(Diary diary, Long modifyDiaryId, String memberId) {
         Diary findDiary = verifyExistsDiary(modifyDiaryId);
+        verifyPermissionCheck(findDiary, memberId);
         //수정 요청 유저와 소유 유저 동일 검증 필요
         findDiary.setContent(diary.getContent());
         findDiary.setEmotion(diary.getEmotion());
@@ -126,9 +129,10 @@ public class DiaryService {
     }
 
 
-    public void removeDiary(Long removeDiaryId){
+    public void removeDiary(Long removeDiaryId, String memberId){
 
         Diary removeDiary = verifyExistsDiary(removeDiaryId);
+        verifyPermissionCheck(removeDiary, memberId);
         diaryRepository.delete(removeDiary);
     }
 
@@ -138,17 +142,17 @@ public class DiaryService {
         return findDiary;
     }
 
-    private void verifyPermissionCheck(Diary diary, String memberId) {
+    public void verifyPermissionCheck(Diary diary, String memberId) {
 
-        if(!diary.getMember().getMemberId().equals(memberId)) throw new RuntimeException();
+        if(!diary.getMember().getMemberId().equals(memberId)) throw new BusinessException(ExceptionCode.NOT_OWN_DIARY,ExceptionCode.NOT_OWN_DIARY.getSentence());
     }
 
     private Diary verifyExistsDiary(Long diaryId){
-        return diaryRepository.findById(diaryId).orElseThrow(()-> new RuntimeException());
+        return diaryRepository.findById(diaryId).orElseThrow(()-> new BusinessException(ExceptionCode.NOT_EXISTS_DIARY,ExceptionCode.NOT_EXISTS_DIARY.getSentence()));
     }
 
     private DiaryImage verifyExistsDiaryImage(Long diaryImageId){
-        return diaryImageRepository.findById(diaryImageId).orElseThrow(()-> new RuntimeException());
+        return diaryImageRepository.findById(diaryImageId).orElseThrow(()-> new BusinessException(ExceptionCode.NOT_EXISTS_DIARY_IMAGE_DATA, ExceptionCode.NOT_EXISTS_DIARY_IMAGE_DATA.getSentence()));
     }
 
     public Page<Diary> findAllDiary(Integer page, Integer size, String strDate, String memberId, String sort, String emotion){

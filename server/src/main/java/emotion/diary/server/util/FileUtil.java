@@ -1,5 +1,7 @@
 package emotion.diary.server.util;
 
+import emotion.diary.server.exception.BusinessException;
+import emotion.diary.server.exception.ExceptionCode;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
@@ -39,7 +41,7 @@ public class FileUtil {
         try{
             Files.delete(fileDir);
         } catch (IOException ioe) {
-            throw new IOException("Could not delete image dir: " + deleteDir, ioe);
+            throw new BusinessException(ExceptionCode.NOT_EXISTS_DIARY_IMAGE_FILE,ExceptionCode.NOT_EXISTS_DIARY_IMAGE_FILE.getSentence());
         }
 
     }
