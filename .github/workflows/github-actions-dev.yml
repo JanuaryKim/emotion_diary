@@ -23,6 +23,6 @@ jobs:
 
       - name: Build and Test
         run: |
-          echo $spring.datasource.username
+          echo $mysql_id
           cd server
           ./gradlew build test
