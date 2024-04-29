@@ -125,7 +125,7 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
 
   const handleClickSubmit = async () => {
     if (
-      content.length < 1 ||
+      content.length < process.env.REACT_APP_MIN_CONTENT_LENGTH ||
       content.length > process.env.REACT_APP_MAX_CONTENT_LENGTH
     ) {
       contentRef.current.focus();
