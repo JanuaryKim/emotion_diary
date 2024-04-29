@@ -23,5 +23,6 @@ jobs:
 
       - name: Build and Test
         run: |
+          echo $spring.datasource.username
           cd server
           ./gradlew build test
