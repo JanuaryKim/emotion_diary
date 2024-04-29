@@ -54,6 +54,7 @@ public class SecurityConfig {
 //                .authorizeHttpRequests(authorize-> authorize.anyRequest().permitAll()) //모든 요청 허용
                 .authorizeHttpRequests(authorize-> {
                     authorize.requestMatchers("/api/**").hasRole("USER");
+                    authorize.requestMatchers("/**").permitAll();
                 })
                 .oauth2Login((oauth)-> oauth.successHandler(oauthSuccessHandler).userInfoEndpoint((oauth2)-> oauth2.userService(oauthService))) //oauth로그인 활성화, 성공시 핸들러 등록, 성공한 유저의 EndPoint를 가지고 권한 설정을 위한 CustomService 등록, userInfoEndpoint는 service 등록을 위한 진입정 정도로 이해
                 .build();
