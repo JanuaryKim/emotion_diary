@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-REPOSITORY=/home/ubuntu/emotion_diary
+REPOSITORY=/home/ubuntu/emotion_diary/server
 cd $REPOSITORY
 
 APP_NAME=emotion_diary
