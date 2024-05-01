@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo "deploy.sh 최초 진입" > /dev/null
+echo "deploy.sh 최초 진입" | sudo tee -a /dev/null
 
 REPOSITORY=/home/ubuntu/emotion_diary/server
 cd $REPOSITORY
