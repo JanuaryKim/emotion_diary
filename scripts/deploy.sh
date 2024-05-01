@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-echo "deploy.sh 최초 진입" | sudo tee -a /home/ubuntu/test
-
+echo "deploy.sh 최초 진입" | sudo tee -a /home/ubuntu/startlog
+sudo touch /home/ubuntu/testfile
 
 REPOSITORY=/home/ubuntu/emotion_diary/server
 cd $REPOSITORY
