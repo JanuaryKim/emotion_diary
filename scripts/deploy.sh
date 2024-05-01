@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "deploy.sh 최초 진입" > /dev/null
+
 REPOSITORY=/home/ubuntu/emotion_diary/server
 cd $REPOSITORY
 
