@@ -22,4 +22,5 @@ else
 fi
 
 echo "> Deploy - $JAR_PATH "
-nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
+#nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
+nohup java -jar $JAR_PATH > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
