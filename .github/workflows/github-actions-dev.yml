@@ -66,13 +66,13 @@ jobs:
             fi
             
             echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
-            echo mysql_id=${{ secrets.mysql_id }} > /home/ubuntu/emotion_diary_env_variable
-            echo mysql_pwd=${{ secrets.mysql_pwd }} > /home/ubuntu/emotion_diary_env_variable
-            echo image_dir_path=${{ secrets.image_dir_path }} > /home/ubuntu/emotion_diary_env_variable
-            echo file_dir_path=${{ secrets.file_dir_path }} > /home/ubuntu/emotion_diary_env_variable
-            echo emotion_diary_google_id=${{ secrets.emotion_diary_google_id }} > /home/ubuntu/emotion_diary_env_variable
-            echo emotion_diary_google_pwd=${{ secrets.emotion_diary_google_pwd }} > /home/ubuntu/emotion_diary_env_variable
-            echo jwt_secret_key=${{ secrets.jwt_secret_key }} > /home/ubuntu/emotion_diary_env_variable
+            echo mysql_id=${{ secrets.mysql_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo mysql_pwd=${{ secrets.mysql_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo image_dir_path=${{ secrets.image_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo file_dir_path=${{ secrets.file_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_id=${{ secrets.emotion_diary_google_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_pwd=${{ secrets.emotion_diary_google_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo jwt_secret_key=${{ secrets.jwt_secret_key }} >> /home/ubuntu/emotion_diary_env_variable
 
 
       - name: Code Deploy To EC2 instance
