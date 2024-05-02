@@ -71,7 +71,7 @@ jobs:
           port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트번호 (보통 22)
           script: | # 실행될 스크립트
             cd /home/ubuntu
-            if test -f "/home/ubuntu/emotion_diary_env_variable; then
+            if [[ -f "/home/ubuntu/emotion_diary_env_variable" ]]; then
               sudo rm /home/ubuntu/emotion_diary_env_variable
             else
               echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
