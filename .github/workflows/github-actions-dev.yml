@@ -54,6 +54,15 @@ jobs:
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://emotiondiary-s3/emotion-diary/$GITHUB_SHA.zip
 
       - name: Create Environment Variable File
+        env:
+          mysql_url: ${{ secrets.mysql_url }}
+          mysql_id: ${{ secrets.mysql_id }}
+          mysql_pwd: ${{ secrets.mysql_pwd }}
+          image_dir_path: ${{ secrets.image_dir_path }}
+          file_dir_path: ${{ secrets.file_dir_path }}
+          emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
+          emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
+          jwt_secret_key: ${{ secrets.jwt_secret_key }}
         uses: appleboy/ssh-action@v0.1.9 # ssh 접속하는 오픈소스
         with:
           host: ${{ secrets.REMOTE_EC2_IP }} # ec2 인스턴스 ip
@@ -62,7 +71,12 @@ jobs:
           port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트번호 (보통 22)
           script: | # 실행될 스크립트
             cd /home/ubuntu
-            touch januaryFile
+            if test -f "/home/ubuntu/emotion_diary_env_variable; then
+              sudo rm /home/ubuntu/emotion_diary_env_variable
+            else
+              echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
+            
+            
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment
