@@ -75,8 +75,7 @@ jobs:
               sudo rm /home/ubuntu/emotion_diary_env_variable
             else
               echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
-            
-            
+            exit 0
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment
