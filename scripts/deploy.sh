@@ -7,6 +7,16 @@ cd $REPOSITORY
 APP_NAME=emotion_diary
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
+PROPERTIES_PATH=$REPOSITORY/src/main/resources/application.properties
+
+if [[ -f $REPOSITORY/build/libs/application-dep.properties ]]; then
+  echo "> 기존 파일 삭제"
+  sudo rm $REPOSITORY/build/libs/application-dep.properties
+fi
+
+echo "> 배포버전 속성파일 생성"
+cp $PROPERTIES_PATH $REPOSITORY/build/libs/application-dep.properties
+
 
 CURRENT_PID=$(pgrep -f $APP_NAME)
 
