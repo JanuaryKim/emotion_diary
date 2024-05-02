@@ -17,12 +17,12 @@ fi
 
 echo "> 배포버전 속성파일 생성"
 #새로 쓰일 속성파일 복사본 생성
-cp ORIGIN_PROPERTIES_PATH $REPOSITORY/build/libs/$PROPERTIES_FILE_NAME
+cp $ORIGIN_PROPERTIES_PATH $REPOSITORY/build/libs/$PROPERTIES_FILE_NAME
 filename=$REPOSITORY/build/libs/$PROPERTIES_FILE_NAME
 # 파일의 각 줄을 반복합니다.
 for line in $(cat "$filename"); do
   # 각 줄을 처리합니다.
-  echo "$line" + " : 성공" >> /home/ubuntu/forTest
+  echo "$line" + " : 성공" > /home/ubuntu/forTest
 done
 
 
