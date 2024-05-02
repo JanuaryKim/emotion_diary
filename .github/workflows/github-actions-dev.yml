@@ -53,6 +53,17 @@ jobs:
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://emotiondiary-s3/emotion-diary/$GITHUB_SHA.zip
 
+      - name: Create Environment Variable File
+        uses: appleboy/ssh-action@v0.1.9 # ssh 접속하는 오픈소스
+        with:
+          host: ${{ secrets.REMOTE_EC2_IP }} # ec2 인스턴스 ip
+          username: ${{ secrets.REMOTE_USER }} # ubuntu 아이디
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }} # ec2 인스턴스 pem key
+          port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트번호 (보통 22)
+          script: | # 실행될 스크립트
+            cd /home/ubuntu
+            touch januaryFile
+
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment
           --application-name emotion-diary
