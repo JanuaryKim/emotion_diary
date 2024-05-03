@@ -27,7 +27,7 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # 각 줄을 처리합니다.
   # echo "$line" + " : 성공" > /home/ubuntu/forTest
   arr=($line)
-  key="\${${arr[0]}\}"
+  key="\${${arr[0]}}"
   echo $key
 done
 
