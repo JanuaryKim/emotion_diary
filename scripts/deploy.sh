@@ -32,7 +32,7 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
 
   replaceKeyword="\${$key}"
   echo "이번에 바꿀 키워드 : ${replaceKeyword} , 값 : ${value}"
-  sed -i 's/${replaceKeyword}/${value}/gi' $NEW_APP_PROPERTIES_PATH
+  sed -i 's/$replaceKeyword/$value/gi' $NEW_APP_PROPERTIES_PATH
 done
 
 
