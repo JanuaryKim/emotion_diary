@@ -29,8 +29,9 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   key=$(expr substr "$line" 1 $(expr $index - 1))
   value=$(expr substr "$line" $(expr $index + 1) ${#line})
 
-  echo $key
-  echo $value
+  replaceKeyword="\${$key\}"
+
+  sed -i 's/${replaceKeyword}/${value}/gi' $NEW_APP_PROPERTIES_PATH
 done
 
 
