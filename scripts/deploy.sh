@@ -7,22 +7,27 @@ cd $REPOSITORY
 APP_NAME=emotion_diary
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
-ORIGIN_PROPERTIES_PATH=$REPOSITORY/src/main/resources/application.properties
-PROPERTIES_FILE_NAME=application-dep.properties
+APP_PROPERTIES_FILE_NAME=application-dep.properties
+ORIGIN_APP_PROPERTIES_PATH=$REPOSITORY/src/main/resources/application.properties
+NEW_APP_PROPERTIES_PATH=$REPOSITORY/build/libs/$APP_PROPERTIES_FILE_NAME
+SECRETS_ENV_VALUE_PATH=/home/ubuntu/emotion_diary_env_variable
 
-if [[ -f $REPOSITORY/build/libs/application-dep.properties ]]; then
+if [[ -f $NEW_APP_PROPERTIES_PATH ]]; then
   echo "> 기존 파일 삭제"
-  sudo rm $REPOSITORY/build/libs/application-dep.properties
+  sudo rm $NEW_APP_PROPERTIES_PATH
 fi
 
 echo "> 배포버전 속성파일 생성"
 #새로 쓰일 속성파일 복사본 생성
-cp $ORIGIN_PROPERTIES_PATH $REPOSITORY/build/libs/$PROPERTIES_FILE_NAME
-filename=$REPOSITORY/build/libs/$PROPERTIES_FILE_NAME
+cp $ORIGIN_APP_PROPERTIES_PATH $NEW_APP_PROPERTIES_PATH
+
 # 파일의 각 줄을 반복합니다.
-for line in $(cat "$filename"); do
+IFS='='
+for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # 각 줄을 처리합니다.
-  echo "$line" + " : 성공" > /home/ubuntu/forTest
+  # echo "$line" + " : 성공" > /home/ubuntu/forTest
+  arr=($line)
+  key="${"
 done
 
 
