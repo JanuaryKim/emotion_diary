@@ -26,13 +26,13 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # 각 줄을 처리합니다.
   # echo "$line" + " : 성공" > /home/ubuntu/forTest
   index=$(expr index "$line" "=")
-  key="$(expr substr "$line" 1 $(expr $index - 1))"
+  key=$(expr substr "$line" 1 $(expr $index - 1))
   value=$(expr substr "$line" $(expr $index + 1) ${#line})
 
 
   replaceKeyword="\${$key}"
   echo "이번에 바꿀 키워드 : ${replaceKeyword} , 값 : ${value}"
-  sed -i 's/$replaceKeyword/$value/gi' $NEW_APP_PROPERTIES_PATH
+  sed -i "s/$replaceKeyword/$value/gi" $NEW_APP_PROPERTIES_PATH
 done
 
 
