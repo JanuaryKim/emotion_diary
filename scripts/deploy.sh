@@ -22,13 +22,15 @@ echo "> 배포버전 속성파일 생성"
 cp $ORIGIN_APP_PROPERTIES_PATH $NEW_APP_PROPERTIES_PATH
 
 # 파일의 각 줄을 반복합니다.
-IFS=':=:'
 for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # 각 줄을 처리합니다.
   # echo "$line" + " : 성공" > /home/ubuntu/forTest
-  arr=($line)
-  key="\${${arr[0]}}"
+  index=$(expr index "$line" "=")
+  key=$(expr substr "$line" 1 $index)
+  value=$(expr substr "$line" $(expr $index + 1) ${#line})
+
   echo $key
+  echo $value
 done
 
 
