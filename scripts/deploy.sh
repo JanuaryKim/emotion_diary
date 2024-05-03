@@ -26,7 +26,7 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # 각 줄을 처리합니다.
   # echo "$line" + " : 성공" > /home/ubuntu/forTest
   index=$(expr index "$line" "=")
-  key=$(expr substr "$line" 1 $index)
+  key=$(expr substr "$line" 1 $(expr $index - 1))
   value=$(expr substr "$line" $(expr $index + 1) ${#line})
 
   echo $key
