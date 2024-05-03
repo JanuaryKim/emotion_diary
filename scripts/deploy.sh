@@ -28,7 +28,7 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
   # echo "$line" + " : 성공" > /home/ubuntu/forTest
   arr=($line)
   key="\${${arr[0]}\}"
-  echo key
+  echo $key
 done
 
 
