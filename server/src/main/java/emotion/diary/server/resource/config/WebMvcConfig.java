@@ -25,7 +25,16 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //        registry.addResourceHandler("/images/diary/**")
 //                .addResourceLocations("file:/C:/emotion-diary/images/diary/");
 
-        String url = "file:/" + homePath + "/" + imagePath;
+        String os = System.getProperty("os.name");
+        String url ="";
+        if (os.equals("OS_NAME_WINDOWS")) {
+            url = "file:/" + homePath + "/" + imagePath;
+        } else if(os.equals("OS_NAME_LINUX")){
+            url = "file:" + homePath + "/" + imagePath;
+        } else{
+            url = "file:/" + homePath + "/" + imagePath;
+        }
+
         System.out.println("webMvc url : " + url);
         registry.addResourceHandler("/images/diary/**")
                 .addResourceLocations(url);
