@@ -28,8 +28,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         String os = System.getProperty("os.name");
         String url ="";
         if (os.equals("OS_NAME_WINDOWS")) {
+            System.out.println("Windows!");
             url = "file:/" + homePath + "/" + imagePath;
         } else if(os.equals("OS_NAME_LINUX")){
+            System.out.println("Linux!");
             url = "file:" + homePath + "/" + imagePath;
         } else{
             url = "file:/" + homePath + "/" + imagePath;
