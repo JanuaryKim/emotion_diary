@@ -26,6 +26,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //                .addResourceLocations("file:/C:/emotion-diary/images/diary/");
 
         String url = "file:/" + homePath + "/" + imagePath;
+        System.out.println("webMvc url : " + url);
         registry.addResourceHandler("/images/diary/**")
                 .addResourceLocations(url);
     }
