@@ -12,6 +12,7 @@ ORIGIN_APP_PROPERTIES_PATH=$REPOSITORY/src/main/resources/application.properties
 NEW_APP_PROPERTIES_PATH=$REPOSITORY/build/libs/$APP_PROPERTIES_FILE_NAME
 SECRETS_ENV_VALUE_PATH=/home/ubuntu/emotion_diary_env_variable
 
+
 if [[ -f $NEW_APP_PROPERTIES_PATH ]]; then
   echo "> 기존 파일 삭제"
   sudo rm $NEW_APP_PROPERTIES_PATH
@@ -32,6 +33,8 @@ for line in $(cat "$SECRETS_ENV_VALUE_PATH"); do
 
   replaceKeyword="\${$key}"
   echo "이번에 바꿀 키워드 : ${replaceKeyword} , 값 : ${value}"
+
+  # 구분자 / -> @ 변경
   sed -i "s@$replaceKeyword@$value@gi" $NEW_APP_PROPERTIES_PATH
 done
 
@@ -42,11 +45,12 @@ if [ -z $CURRENT_PID ]
 then
   echo "> 종료할 애플리케이션이 없습니다."
 else
-  echo "> kill -9 $CURRENT_PID"
+  echo "> kill -9 $CURRENTd_PID"
   kill -15 $CURRENT_PID
   sleep 5
 fi
 
 echo "> Deploy - $JAR_PATH "
 #nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
-nohup java -jar $JAR_PATH > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
+#nohup java -jar $JAR_PATH > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
+nohup java -jar ./server-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/emotion_diary/server/build/libs/application-dep.properties
