@@ -53,4 +53,4 @@ fi
 echo "> Deploy - $JAR_PATH "
 #nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
 #nohup java -jar $JAR_PATH > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
-nohup java -jar ./server-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/emotion_diary/server/build/libs/application-dep.properties > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
+nohup java -jar /home/ubuntu/emotion_diary/server/build/libs/server-0.0.1-SNAPSHOT.jar --spring.config.location=/home/ubuntu/emotion_diary/server/build/libs/application-dep.properties > /home/ubuntu/emotion_diary_log 2> /home/ubuntu/emotion_diary_log < /home/ubuntu/emotion_diary_log &
