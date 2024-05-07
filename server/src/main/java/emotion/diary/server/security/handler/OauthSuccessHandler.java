@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -25,6 +26,13 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtTokenizer jwtTokenizer;
     private final MemberService memberService;
+
+    @Value("${redirect.client.host}")
+    private final String redirectClientHost;
+
+    @Value("${redirect.client.scheme}")
+    private final String redirectClientScheme;
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         System.out.println("Oauth 인증 성공!");
@@ -71,12 +79,22 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         return UriComponentsBuilder
                 .newInstance()
-                .scheme("http")
-                .host("localhost")
+                .scheme(redirectClientScheme)
+                .host(redirectClientHost)
                 .path("/saveToken")
                 .port(3000)
                 .queryParams(queryParams)
                 .build()
                 .toUri();
+
+//        return UriComponentsBuilder
+//                .newInstance()
+//                .scheme("http")
+//                .host("localhost")
+//                .path("/saveToken")
+//                .port(3000)
+//                .queryParams(queryParams)
+//                .build()
+//                .toUri();
     }
 }

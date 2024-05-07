@@ -1,7 +1,11 @@
 package emotion.diary.server.java;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -48,5 +52,32 @@ public class BasicJavaTests {
 
         System.out.println(fromDate);
         System.out.println(toDate);
+    }
+
+    @Test
+    void uriTest(){
+        MultiValueMap<String, String> queryParams = new LinkedMultiValueMap<>();
+        queryParams.add("access_token", "ddd");
+        URI uri1 = UriComponentsBuilder
+                .newInstance()
+                .uri(URI.create("https://emotion-diary-five-ebon.vercel.app/saveToken"))
+                .port(3000)
+                .queryParams(queryParams)
+                .build()
+                .toUri();
+
+
+        URI uri2 = UriComponentsBuilder
+                .newInstance()
+                .scheme("http")
+                .host("localhost")
+                .path("/saveToken")
+                .port(3000)
+                .queryParams(queryParams)
+                .build()
+                .toUri();
+
+        System.out.println(uri1.getRawPath());
+        System.out.println(uri2.getRawPath());
     }
 }
