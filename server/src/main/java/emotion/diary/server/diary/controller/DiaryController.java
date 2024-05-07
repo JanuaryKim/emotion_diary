@@ -6,6 +6,7 @@ import emotion.diary.server.diary.dto.DiaryPageResponseDTO;
 import emotion.diary.server.diary.entity.Diary;
 import emotion.diary.server.diary.entity.DiaryImage;
 import emotion.diary.server.diary.mapper.DiaryMapper;
+import emotion.diary.server.diary.repository.DiaryRepository;
 import emotion.diary.server.diary.service.DiaryService;
 import emotion.diary.server.jwt.JwtTokenizer;
 import jakarta.validation.Valid;
@@ -32,6 +33,10 @@ public class DiaryController {
     private final DiaryService diaryService;
     private final DiaryMapper diaryMapper;
     private final JwtTokenizer jwtTokenizer;
+
+    //삭제
+    private final DiaryRepository repository;
+
     @PostMapping(value="/api/diarys")
         public ResponseEntity postDiary(@RequestPart(value = "diary-post-dto") DiaryDTO.Post diaryDTOPost,
                                         @RequestPart(value = "diary-images",required = false) MultipartFile[] diaryImages,
@@ -97,14 +102,19 @@ public class DiaryController {
     @GetMapping(value = "/")
     public ResponseEntity test(){
 
-        Map<String, Object> claims = new HashMap<>();
-        claims.put("memberId", "테스터");
-        claims.put("memberEmail", "테스터");
-        claims.put("memberRoles", List.of("ROLE_USER"));
-        String subject = "accessToken";
-        Date accessTokenExpirationDate = jwtTokenizer.getAccessTokenExpiration();
-        jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey());
+//        Map<String, Object> claims = new HashMap<>();
+//        claims.put("memberId", "테스터");
+//        claims.put("memberEmail", "테스터");
+//        claims.put("memberRoles", List.of("ROLE_USER"));
+//        String subject = "accessToken";
+//        Date accessTokenExpirationDate = jwtTokenizer.getAccessTokenExpiration();
+//        jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey());
+//        return new ResponseEntity(jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey()),HttpStatus.OK);
+        
+        
+        //테스트
+        Diary diary = repository.findById(1L).get();
+        return new ResponseEntity(diaryMapper.diaryToDiaryDTOResponse(diary), HttpStatus.OK);
 
-        return new ResponseEntity(jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey()),HttpStatus.OK);
     }
 }
