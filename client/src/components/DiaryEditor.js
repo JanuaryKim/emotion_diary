@@ -47,11 +47,11 @@ const DiaryEditor = ({ isEdit, originData, id }) => {
         }
       });
 
-      const droppedFiles = acceptedFiles.map((file) =>
-        Object.assign(file, {
+      const droppedFiles = acceptedFiles.map((file) => {
+        return Object.assign(file, {
           preview: URL.createObjectURL(file),
-        })
-      );
+        });
+      });
 
       if (
         files.length + droppedFiles.length >
