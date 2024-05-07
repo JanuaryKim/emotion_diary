@@ -33,6 +33,8 @@ jobs:
           emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
           emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
           jwt_secret_key: ${{ secrets.jwt_secret_key }}
+          emotion_diary_success_login_redirect_client_host : ${{ secrets.emotion_diary_success_login_redirect_client_host }}
+          emotion_diary_success_login_redirect_client_scheme : ${{ secrets.emotion_diary_success_login_redirect_client_scheme }}
         run: |
           cd server
           ./gradlew build test
@@ -73,6 +75,8 @@ jobs:
             echo emotion_diary_google_id=${{ secrets.emotion_diary_google_id }} >> /home/ubuntu/emotion_diary_env_variable
             echo emotion_diary_google_pwd=${{ secrets.emotion_diary_google_pwd }} >> /home/ubuntu/emotion_diary_env_variable
             echo jwt_secret_key=${{ secrets.jwt_secret_key }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_host=${{ secrets.emotion_diary_success_login_redirect_client_host }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_scheme=${{ secrets.emotion_diary_success_login_redirect_client_scheme }} >> /home/ubuntu/emotion_diary_env_variable
 
 
       - name: Code Deploy To EC2 instance
