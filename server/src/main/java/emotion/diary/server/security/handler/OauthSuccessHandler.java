@@ -82,7 +82,6 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .scheme(redirectClientScheme)
                 .host(redirectClientHost)
                 .path("/saveToken")
-                .port(3000)
                 .queryParams(queryParams)
                 .build()
                 .toUri();
