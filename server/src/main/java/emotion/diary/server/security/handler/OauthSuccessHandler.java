@@ -28,10 +28,10 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final MemberService memberService;
 
     @Value("${success.login.redirect.client.host}")
-    private final String redirectClientHost;
+    private String redirectClientHost;
 
     @Value("${success.login.redirect.client.scheme}")
-    private final String redirectClientScheme;
+    private String redirectClientScheme;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
