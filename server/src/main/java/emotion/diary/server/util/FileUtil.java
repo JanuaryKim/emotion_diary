@@ -24,6 +24,7 @@ public class FileUtil {
 
         try (InputStream inputStream = multipartFile.getInputStream()) {
             Path filePath = uploadPath.resolve(newFileName);
+            System.out.println("저장되는 경로 : " + filePath);
             Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
             return newFileName;
         } catch (IOException ioe) {

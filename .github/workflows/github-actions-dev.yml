@@ -32,6 +32,9 @@ jobs:
           file_dir_path: ${{ secrets.file_dir_path }}
           emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
           emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
+          jwt_secret_key: ${{ secrets.jwt_secret_key }}
+          success_login_redirect_client_host : ${{ secrets.emotion_diary_success_login_redirect_client_host }}
+          success_login_redirect_client_scheme : ${{ secrets.emotion_diary_success_login_redirect_client_scheme }}
         run: |
           cd server
           ./gradlew build test
@@ -51,6 +54,30 @@ jobs:
 
       - name: Upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://emotiondiary-s3/emotion-diary/$GITHUB_SHA.zip
+
+      - name: Create Environment Variable File
+        uses: appleboy/ssh-action@v0.1.9 # ssh 접속하는 오픈소스
+        with:
+          host: ${{ secrets.REMOTE_EC2_IP }} # ec2 인스턴스 ip
+          username: ${{ secrets.REMOTE_USER }} # ubuntu 아이디
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }} # ec2 인스턴스 pem key
+          port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트번호 (보통 22)
+          script: | # 실행될 스크립트
+            if [[ -f "/home/ubuntu/emotion_diary_env_variable" ]]; then
+              sudo rm /home/ubuntu/emotion_diary_env_variable
+            fi
+            
+            echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
+            echo mysql_id=${{ secrets.mysql_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo mysql_pwd=${{ secrets.mysql_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo image_dir_path=${{ secrets.image_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo file_dir_path=${{ secrets.file_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_id=${{ secrets.emotion_diary_google_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_pwd=${{ secrets.emotion_diary_google_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo jwt_secret_key=${{ secrets.jwt_secret_key }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_host=${{ secrets.emotion_diary_success_login_redirect_client_host }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_scheme=${{ secrets.emotion_diary_success_login_redirect_client_scheme }} >> /home/ubuntu/emotion_diary_env_variable
+
 
       - name: Code Deploy To EC2 instance
         run: aws deploy create-deployment
