@@ -27,10 +27,10 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtTokenizer jwtTokenizer;
     private final MemberService memberService;
 
-    @Value("${redirect.client.host}")
+    @Value("${success.login.redirect.client.host}")
     private final String redirectClientHost;
 
-    @Value("${redirect.client.scheme}")
+    @Value("${success.login.redirect.client.scheme}")
     private final String redirectClientScheme;
 
     @Override
