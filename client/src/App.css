@@ -1,0 +1,444 @@
+@import url("https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Yeon+Sung&display=swap");
+
+body {
+  background-color: #f6f6f6;
+  display: flex; /* 해당 요소 flex 컨테이너화 */
+  justify-content: center; /* 해당 컨테이너의 요소(아이템)들을 주축 방향으로 가운데 정렬 */
+  align-items: center; /* 교차축(주축 반대) 기준 가운데 정렬 */
+  font-family: "Nanum Pen Script", cursive;
+  min-height: 100vh; /* body요소는 웹 스크린의 실제 높이 크기의 100%를 실제 크기로 가지겠다. */
+  margin: 0px;
+}
+
+@media (min-width: 650px) {
+  /*반응형 앱 개발시 사용*/
+  /* 스크린의 화면이 최소 650px 이상일때 적용할 규칙*/
+  .App {
+    width: 640px;
+  }
+}
+@media (max-width: 650px) {
+  /* 스크린의 화면이 최대 650px 이하일때 적용할 규칙*/
+  .App {
+    width: 90vw; /* 웹 스크린의 실제 넓이 크기의 90%를 실제 크기로 가지겠다.*/
+  }
+}
+
+#root {
+  background-color: white;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+}
+
+.App {
+  min-height: 100vh;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+/* 버튼 */
+
+.MyButton {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+}
+
+.MyButton_default {
+  background-color: #ececec;
+  color: black;
+}
+
+.MyButton_positive {
+  background-color: #64c964;
+  color: white;
+}
+
+.MyButton_negative {
+  background-color: #fd565f;
+  color: white;
+}
+
+/* 헤더 */
+
+header {
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e2e2e2;
+}
+
+header > div {
+  display: flex;
+}
+
+header .head_text {
+  width: 50%;
+  font-size: 25px;
+  justify-content: center;
+}
+
+header .head_btn_left {
+  width: 25%;
+  justify-content: start;
+}
+
+header .head_btn_right {
+  width: 25%;
+  justify-content: end;
+}
+
+header button {
+  font-family: "Nanum Pen Script";
+}
+
+/* 다이어리 리스트 */
+
+.DiaryList .menu_wrapper {
+  margin-top: 20px;
+  margin-bottom: 30px;
+  display: flex; /*해당 div를 flex 컨테이너화*/
+  justify-content: space-between; /*현재 주축 방향으로 사이 공간을 띄움움*/
+}
+
+.DiaryList .menu_wrapper .right_col {
+  flex-grow: 1; /*나머지 공간 다 차지*/
+}
+
+.DiaryList .menu_wrapper .right_col .MyButton {
+  width: 100%;
+}
+
+.DiaryList .ControlMenu {
+  margin-right: 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #ececec;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  cursor: pointer;
+  font-family: "Nanum Pen Script";
+  font-size: 18px;
+}
+
+/* 다이어리 아이템 */
+.DiaryItem {
+  padding-top: 15px;
+  padding-bottom: 15px;
+
+  border-bottom: 1px solid #e2e2e2;
+
+  display: flex;
+  justify-content: space-between;
+}
+
+.DiaryItem .emotion_img_wrapper {
+  cursor: pointer;
+  min-width: 120px;
+  height: 80px;
+  border-radius: 5px;
+  display: flex; /*컨테이너를 만드는 효과도 있지만, box형태의 프레임을 만든 뒤 그 안에 요소를 집어 넣는 듯*/
+  justify-content: center;
+}
+
+.DiaryItem .emotion_img_wrapper_1 {
+  background-color: #64c964;
+}
+.DiaryItem .emotion_img_wrapper_2 {
+  background-color: #9dd772;
+}
+.DiaryItem .emotion_img_wrapper_3 {
+  background-color: #fdce17;
+}
+.DiaryItem .emotion_img_wrapper_4 {
+  background-color: #fd8446;
+}
+.DiaryItem .emotion_img_wrapper_5 {
+  background-color: #fd565f;
+}
+
+.DiaryItem .emotion_img_wrapper img {
+  width: 50%;
+}
+
+.DiaryItem .info_wrapper {
+  flex-grow: 1;
+  margin-left: 20px;
+  cursor: pointer;
+}
+
+.DiaryItem .diary_date {
+  font-weight: bold;
+  font-size: 25px;
+  margin-bottom: 5px;
+}
+
+.DiaryItem .diary_content_preview {
+  font-size: 18px;
+}
+
+.DiaryItem .btn_wrapper {
+  min-width: 70px; /* 최소 70px 유지*/
+}
+
+.DiaryEditor {
+}
+
+.DiaryEditor section {
+  margin-bottom: 40px;
+}
+
+.DiaryEditor h4 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.DiaryEditor .input_date {
+  border: none;
+  border-radius: 5px;
+  background-color: #ececec;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  cursor: pointer;
+  font-family: "Nanum Pen Script";
+  font-size: 20px;
+}
+
+.DiaryEditor .emotion_list_wrapper {
+  display: grid; /*격자를 만듦*/
+  grid-template-columns: repeat(
+    5,
+    auto
+  ); /* 격자의 열을 5로 하겠다, 그리고 사이즈는 화면 크기에 따라 auto*/
+  gap: 2%; /* 격자의 형태 안에 배치 된 아이템들 간의 사이 공간 거리 */
+}
+
+.DiaryEditor textarea {
+  font-family: "Nanum Pen Script";
+  font-size: 20px;
+
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 200px;
+  resize: vertical; /* 텍스트 에어리어가 위아래로만 크기조절 가능하도록*/
+
+  border: none;
+  border-radius: 5px;
+  background-color: #ececec;
+
+  padding: 20px;
+}
+
+.DiaryEditor .control_box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 이모션 아이템 */
+
+.EmotionItem {
+  cursor: pointer;
+
+  border-radius: 5px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+
+  display: flex; /* 아래의 요소들을 횡대로 만들고 박스화?한다*/
+  flex-direction: column; /*원래 횡대인 축을 세로로 바꾸고, 감정이미지와 감정설명텍스트를 위아래로 배치하기 위함*/
+  justify-content: center;
+  align-items: center;
+}
+
+.EmotionItem img {
+  width: 50%;
+  margin-bottom: 10px;
+}
+
+.EmotionItem span {
+  font-size: 18px;
+}
+
+.EmotionItem_off {
+  background-color: #ececec;
+}
+
+.EmotionItem_on_1 {
+  background-color: #64c964;
+}
+.EmotionItem_on_2 {
+  background-color: #9dd772;
+}
+.EmotionItem_on_3 {
+  background-color: #fdce17;
+}
+.EmotionItem_on_4 {
+  background-color: #fd8446;
+}
+.EmotionItem_on_5 {
+  background-color: #fd565f;
+}
+
+/* 다이어리 */
+
+.DiaryPage {
+}
+
+.DiaryPage section {
+  width: 100%;
+  margin-bottom: 100px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.DiaryPage h4 {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.DiaryPage .diary_img_wrapper {
+  background-color: #ececec;
+  width: 250px;
+  height: 250px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around; /*현재 주축(세로축)을 기준으로 가운데로 모아주면서 각 요소들간의 적당히 여백을 마련*/
+}
+
+.DiaryPage .emotion_descript {
+  font-size: 25px;
+  color: white;
+}
+
+.DiaryPage .diary_img_wrapper_1 {
+  background-color: #64c964;
+}
+.DiaryPage .diary_img_wrapper_2 {
+  background-color: #9dd772;
+}
+.DiaryPage .diary_img_wrapper_3 {
+  background-color: #fdce17;
+}
+.DiaryPage .diary_img_wrapper_4 {
+  background-color: #fd8446;
+}
+.DiaryPage .diary_img_wrapper_5 {
+  background-color: #fd565f;
+}
+
+.DiaryPage .diary_content_wrapper {
+  width: 100%;
+  background-color: #ececec;
+  border-radius: 5px;
+  word-break: keep-all; /* 줄바꿈 해야할때 단어를 쪼개지 말라*/
+  overflow-wrap: break-word; /*한줄의 문장이 길때 줄바꿈 하라*/
+}
+
+.DiaryPage .diary_content_wrapper p {
+  padding: 20px;
+  text-align: left;
+  font-size: 20px;
+  font-family: "Yeon Sung";
+  line-height: 2.5; /* 줄간의 간격 */
+}
+
+.LoginHeader {
+  margin-top: 10px;
+  display: flex;
+}
+
+.LoginButton {
+  margin-left: 10px;
+}
+
+.PageNumber {
+  justify-content: center;
+  display: flex;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.PageButton {
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 10px;
+  padding-right: 10px;
+  margin-right: 5px;
+}
+
+.PageButton_positive {
+  background-color: #9dd772;
+  color: white;
+}
+
+.PageButton_default {
+  background-color: #ececec;
+}
+
+.LoginHeader .btn_left {
+  width: 50%;
+}
+
+.LoginHeader .btn_right {
+  display: flex;
+  width: 50%;
+  justify-content: end;
+}
+
+.StateLogout {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #fd565f;
+  color: white;
+}
+
+.StateLogin {
+  border: none;
+  border-radius: 5px;
+
+  padding-top: 10px;
+  padding-bottom: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  font-size: 18px;
+  white-space: nowrap; /* 버튼 안에 글씨가 짤려서 두줄이 되지 않게 해줌 */
+  font-family: "Nanum Pen Script";
+  background-color: #64c964;
+  color: white;
+}

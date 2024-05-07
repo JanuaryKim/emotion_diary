@@ -29,7 +29,8 @@ public class JwtTokenizer {
 
 
     // access 토큰 생성
-    public String generateAccessToken(Map<String, Object> claims,
+    public String
+    generateAccessToken(Map<String, Object> claims,
                                       String subject,
                                       Date expiration,
                                       String secretKey) {
@@ -68,11 +69,19 @@ public class JwtTokenizer {
     }
 
     // 토큰 유효기간 계산
-    public Date getTokenExpiration(int expirationMinutes) {
+    private Date getTokenExpiration(int expirationMinutes) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.MINUTE, expirationMinutes);
         Date expiration = calendar.getTime();
 
         return expiration;
+    }
+
+    public Date getAccessTokenExpiration(){
+        return getTokenExpiration(this.accessTokenExpirationMinutes);
+    }
+
+    public Date getRefreshTokenExpiration(){
+        return getTokenExpiration(this.getRefreshTokenExpirationMinutes());
     }
 }

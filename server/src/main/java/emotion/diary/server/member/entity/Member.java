@@ -1,15 +1,15 @@
 package emotion.diary.server.member.entity;
 
 import emotion.diary.server.auditable.BaseTimeEntity;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+import java.util.List;
+
+@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,11 +18,14 @@ import lombok.NoArgsConstructor;
 public class Member extends BaseTimeEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long memberId;
+    private String memberId;
 
     private String email;
 
-    private short reg_kind;
+    private String reg_kind;
+
+    //@ElementCollection 별도의 테이블에 데이터를 저장함.
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> memberRoles;
 
 }

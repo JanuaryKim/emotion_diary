@@ -1,0 +1,60 @@
+name: Build and Deploy to EC2
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 빌드 작업
+
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./server/gradlew
+        shell: bash
+
+      - name: Build and Test
+        env:
+          mysql_url: ${{ secrets.mysql_url }}
+          mysql_id: ${{ secrets.mysql_id }}
+          mysql_pwd: ${{ secrets.mysql_pwd }}
+          image_dir_path: ${{ secrets.image_dir_path }}
+          file_dir_path: ${{ secrets.file_dir_path }}
+          emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
+          emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
+        run: |
+          cd server
+          ./gradlew build test
+
+      # 배포 작업
+
+      - name: Make Zip File
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell : bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://emotiondiary-s3/emotion-diary/$GITHUB_SHA.zip
+
+      - name: Code Deploy To EC2 instance
+        run: aws deploy create-deployment
+          --application-name emotion-diary
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name emotiondiary
+          --s3-location bucket=emotiondiary-s3,bundleType=zip,key=emotion-diary/$GITHUB_SHA.zip

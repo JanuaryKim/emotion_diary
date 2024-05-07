@@ -7,6 +7,7 @@ import java.util.Map;
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 public class OAuthAttributes {
 
@@ -15,15 +16,8 @@ public class OAuthAttributes {
     private String memberId;
     private String memberEmail;
     private String memberImageUrl;
+    private String socialKind;
 
-    @Builder
-    public OAuthAttributes(Map<String, Object> attributes, String nameAttributeKey, String memberId, String memberEmail, String memberImageUrl) {
-        this.attributes = attributes;
-        this.nameAttributeKey = nameAttributeKey;
-        this.memberId = memberId;
-        this.memberEmail = memberEmail;
-        this.memberImageUrl = memberImageUrl;
-    }
 
     public static OAuthAttributes of(String registrationId, String userNameAttributeName, Map<String, Object> attributes){
         if(registrationId.equals("naver")) {
@@ -44,6 +38,7 @@ public class OAuthAttributes {
                 .memberImageUrl((String) response.get("profile_image"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
+                .socialKind("naver")
                 .build();
     }
 
@@ -60,7 +55,7 @@ public class OAuthAttributes {
                 .memberEmail(email)
                 .memberImageUrl(profileImageUrl)
                 .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName).build();
+                .nameAttributeKey(userNameAttributeName).socialKind("kakao").build();
     }
 
     private static OAuthAttributes ofGoogle(String userNameAttributeName, Map<String, Object> attributes) {
@@ -73,7 +68,7 @@ public class OAuthAttributes {
                 .memberEmail(email)
                 .memberImageUrl(picture)
                 .attributes(attributes)
-                .nameAttributeKey(userNameAttributeName).build();
+                .nameAttributeKey(userNameAttributeName).socialKind("google").build();
     }
 
 }
