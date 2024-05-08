@@ -35,6 +35,9 @@ jobs:
           jwt_secret_key: ${{ secrets.jwt_secret_key }}
           success_login_redirect_client_host : ${{ secrets.emotion_diary_success_login_redirect_client_host }}
           success_login_redirect_client_scheme : ${{ secrets.emotion_diary_success_login_redirect_client_scheme }}
+          server_ssl_key_store : ${{secrets.emotion_diary_ssl_key_store}}
+          server_ssl_key_store_type : ${{secrets.emotion_diary_ssl_key_store_type}}
+          server_ssl_key_store_pwd : ${{secrets.emotion_diary_ssl_key_store_pwd}}
         run: |
           cd server
           ./gradlew build test
@@ -77,6 +80,9 @@ jobs:
             echo jwt_secret_key=${{ secrets.jwt_secret_key }} >> /home/ubuntu/emotion_diary_env_variable
             echo emotion_diary_success_login_redirect_client_host=${{ secrets.emotion_diary_success_login_redirect_client_host }} >> /home/ubuntu/emotion_diary_env_variable
             echo emotion_diary_success_login_redirect_client_scheme=${{ secrets.emotion_diary_success_login_redirect_client_scheme }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_ssl_key_store=${{secrets.emotion_diary_ssl_key_store}} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_ssl_key_store_type=${{secrets.emotion_diary_ssl_key_store_type}} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_ssl_key_store_pwd=${{secrets.emotion_diary_ssl_key_store_pwd}} >> /home/ubuntu/emotion_diary_env_variable
 
 
       - name: Code Deploy To EC2 instance
