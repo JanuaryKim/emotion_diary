@@ -62,7 +62,7 @@ public class JwtVerificationFilter extends OncePerRequestFilter {
                 return;
             } catch (RuntimeException e) {
                 System.out.println(e.getMessage());
-                handleAuthorityException(response, new AuthorityException(ExceptionCode.WRONG_SIGNATURE_JWT_TOKEN, e.getMessage()));
+                handleAuthorityException(response, new AuthorityException(ExceptionCode.EXCEPTION_FROM_SERVER, ExceptionCode.EXCEPTION_FROM_SERVER.getSentence()));
                 return;
             }
         }
