@@ -14,7 +14,9 @@ public enum ExceptionCode {
     NOT_EXISTS_DIARY(404, "존재하지 않는 일기"),
     NOT_OWN_DIARY(403, "자신 소유의 일기가 아님"),
     NOT_EXISTS_DIARY_IMAGE_DATA(404, "존재하지 않는 일기 이미지 데이터"),
-    NOT_EXISTS_DIARY_IMAGE_FILE(404, "존재하지 않는 일기 이미지 파일");
+    NOT_EXISTS_DIARY_IMAGE_FILE(404, "존재하지 않는 일기 이미지 파일"),
+    EXCEPTION_FROM_SERVER(500, "서버측의 예상치 못한 에러 발생");
+
 
     private int code;
     private String sentence;
