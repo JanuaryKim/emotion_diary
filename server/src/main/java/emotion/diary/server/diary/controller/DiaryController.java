@@ -19,10 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.security.Principal;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -98,23 +95,8 @@ public class DiaryController {
                 ,HttpStatus.OK);
     }
 
-
     @GetMapping(value = "/")
-    public ResponseEntity test(){
-
-//        Map<String, Object> claims = new HashMap<>();
-//        claims.put("memberId", "테스터");
-//        claims.put("memberEmail", "테스터");
-//        claims.put("memberRoles", List.of("ROLE_USER"));
-//        String subject = "accessToken";
-//        Date accessTokenExpirationDate = jwtTokenizer.getAccessTokenExpiration();
-//        jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey());
-//        return new ResponseEntity(jwtTokenizer.generateAccessToken(claims, subject,accessTokenExpirationDate,jwtTokenizer.getSecretKey()),HttpStatus.OK);
-        
-        
-        //테스트
-        Diary diary = repository.findById(1L).get();
-        return new ResponseEntity(diaryMapper.diaryToDiaryDTOResponse(diary), HttpStatus.OK);
-
+    public ResponseEntity index(){
+        return new ResponseEntity(HttpStatus.OK);
     }
 }

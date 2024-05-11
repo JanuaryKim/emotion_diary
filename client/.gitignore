@@ -24,3 +24,8 @@ yarn-error.log*
 
 # variable
 .env
+
+# firebase
+.firebaserc
+firebase.json
+hosting.YnVpbGQ.cache
