@@ -1,0 +1,87 @@
+name: Build and Deploy to EC2
+
+on:
+  push:
+    branches: [ "dev" ]
+  pull_request:
+    branches: [ "dev" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # 빌드 작업
+
+      - uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x ./server/gradlew
+        shell: bash
+
+      - name: Build and Test
+        env:
+          mysql_url: ${{ secrets.mysql_url }}
+          mysql_id: ${{ secrets.mysql_id }}
+          mysql_pwd: ${{ secrets.mysql_pwd }}
+          image_dir_path: ${{ secrets.image_dir_path }}
+          file_dir_path: ${{ secrets.file_dir_path }}
+          emotion_diary_google_id: ${{ secrets.emotion_diary_google_id }}
+          emotion_diary_google_pwd: ${{ secrets.emotion_diary_google_pwd }}
+          jwt_secret_key: ${{ secrets.jwt_secret_key }}
+          success_login_redirect_client_host : ${{ secrets.emotion_diary_success_login_redirect_client_host }}
+          success_login_redirect_client_scheme : ${{ secrets.emotion_diary_success_login_redirect_client_scheme }}
+        run: |
+          cd server
+          ./gradlew build test
+
+      # 배포 작업
+
+      - name: Make Zip File
+        run: zip -qq -r ./$GITHUB_SHA.zip .
+        shell : bash
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_PRIVATE_ACCESS_KEY }}
+          aws-region: ap-northeast-2
+
+      - name: Upload to S3
+        run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://emotiondiary-s3/emotion-diary/$GITHUB_SHA.zip
+
+      - name: Create Environment Variable File
+        uses: appleboy/ssh-action@v0.1.9 # ssh 접속하는 오픈소스
+        with:
+          host: ${{ secrets.REMOTE_EC2_IP }} # ec2 인스턴스 ip
+          username: ${{ secrets.REMOTE_USER }} # ubuntu 아이디
+          key: ${{ secrets.REMOTE_PRIVATE_KEY }} # ec2 인스턴스 pem key
+          port: ${{ secrets.REMOTE_SSH_PORT }} # 접속포트번호 (보통 22)
+          script: | # 실행될 스크립트
+            if [[ -f "/home/ubuntu/emotion_diary_env_variable" ]]; then
+              sudo rm /home/ubuntu/emotion_diary_env_variable
+            fi
+            
+            echo mysql_url=${{ secrets.mysql_url }} > /home/ubuntu/emotion_diary_env_variable
+            echo mysql_id=${{ secrets.mysql_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo mysql_pwd=${{ secrets.mysql_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo image_dir_path=${{ secrets.image_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo file_dir_path=${{ secrets.file_dir_path }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_id=${{ secrets.emotion_diary_google_id }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_google_pwd=${{ secrets.emotion_diary_google_pwd }} >> /home/ubuntu/emotion_diary_env_variable
+            echo jwt_secret_key=${{ secrets.jwt_secret_key }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_host=${{ secrets.emotion_diary_success_login_redirect_client_host }} >> /home/ubuntu/emotion_diary_env_variable
+            echo emotion_diary_success_login_redirect_client_scheme=${{ secrets.emotion_diary_success_login_redirect_client_scheme }} >> /home/ubuntu/emotion_diary_env_variable
+
+
+      - name: Code Deploy To EC2 instance
+        run: aws deploy create-deployment
+          --application-name emotion-diary
+          --deployment-config-name CodeDeployDefault.AllAtOnce
+          --deployment-group-name emotiondiary
+          --s3-location bucket=emotiondiary-s3,bundleType=zip,key=emotion-diary/$GITHUB_SHA.zip

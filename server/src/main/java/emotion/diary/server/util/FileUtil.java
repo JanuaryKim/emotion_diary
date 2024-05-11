@@ -1,5 +1,7 @@
 package emotion.diary.server.util;
 
+import emotion.diary.server.exception.BusinessException;
+import emotion.diary.server.exception.ExceptionCode;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,9 +9,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.UUID;
 
 public class FileUtil {
-    public static void saveFile(String uploadDir, String fileName,
+    public static String saveFile(String uploadDir, String originalFileName,
                                 MultipartFile multipartFile) throws IOException {
         Path uploadPath = Paths.get(uploadDir);
         System.out.println(uploadPath.toAbsolutePath());
@@ -17,12 +20,15 @@ public class FileUtil {
             Files.createDirectories(uploadPath);
         }
 
-        try (InputStream inputStream = multipartFile.getInputStream()) {
-            Path filePath = uploadPath.resolve(fileName);
-            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+        String newFileName = generateFileName() + "_" + originalFileName;
 
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            Path filePath = uploadPath.resolve(newFileName);
+            System.out.println("저장되는 경로 : " + filePath);
+            Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+            return newFileName;
         } catch (IOException ioe) {
-            throw new IOException("Could not save image file: " + fileName, ioe);
+            throw new IOException("Could not save image file: " + newFileName, ioe);
         }
     }
 
@@ -36,8 +42,13 @@ public class FileUtil {
         try{
             Files.delete(fileDir);
         } catch (IOException ioe) {
-            throw new IOException("Could not delete image dir: " + deleteDir, ioe);
+            throw new BusinessException(ExceptionCode.NOT_EXISTS_DIARY_IMAGE_FILE,ExceptionCode.NOT_EXISTS_DIARY_IMAGE_FILE.getSentence());
         }
 
+    }
+
+    private static String generateFileName(){
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
 }
