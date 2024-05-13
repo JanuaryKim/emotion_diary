@@ -36,3 +36,5 @@
 ## 📑 API 명세서
 [링크](https://documenter.getpostman.com/view/24349489/2sA3JM8gyD)
 
+## 🔩 배포
+[링크](https://emotion-diary-f22ed.web.app)
